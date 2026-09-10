@@ -5,6 +5,13 @@
 
 const DB_KEY = 'mpa_data_v2';
 
+// ── Base de données partagée (Supabase) ────────────────────────
+// Toutes les modifications faites depuis l'espace Admin sont
+// synchronisées ici, pour que TOUS les visiteurs voient les mêmes
+// données, quel que soit leur appareil.
+const SUPABASE_URL = 'https://fcoevwmcqeycxkjoqihz.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZjb2V2d21jcWV5Y3hram9xaWh6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODkwNDcwMTMsImV4cCI6MjEwNDYyMzAxM30.KWuwMl3UKLuGs6kNWqYJa61C0Mpnox6WqB1GdsUipIU';
+
 // ── Données initiales (démo) ─────────────────────────────────
 const INITIAL_DATA = {
   messages: [
@@ -232,6 +239,9 @@ const DB = {
     } catch(e) {
       console.error('Erreur sauvegarde:', e);
     }
+    // Pousse aussi la modification vers la base partagée, pour que
+    // tous les visiteurs (pas seulement cet appareil) voient le changement.
+    pushToCloud(data);
   },
 
   // ── Messages ────────────────────────────────────────────────
@@ -363,10 +373,68 @@ const DB = {
   }
 };
 
-// Initialiser si données absentes
+// ── Synchronisation avec la base partagée (Supabase) ───────────
+async function syncFromCloud() {
+  try {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 6000); // max 6s d'attente
+    const res = await fetch(
+      `${SUPABASE_URL}/rest/v1/site_data?id=eq.main&select=content`,
+      {
+        headers: {
+          apikey: SUPABASE_ANON_KEY,
+          Authorization: `Bearer ${SUPABASE_ANON_KEY}`
+        },
+        signal: controller.signal
+      }
+    );
+    clearTimeout(timeout);
+    if (!res.ok) throw new Error('Réponse Supabase invalide: ' + res.status);
+    const rows = await res.json();
+    if (rows && rows[0] && rows[0].content) {
+      localStorage.setItem(DB_KEY, JSON.stringify(rows[0].content));
+      return true;
+    }
+  } catch (e) {
+    console.error('Synchronisation cloud impossible, utilisation des données locales.', e);
+  }
+  return false;
+}
+
+async function pushToCloud(data) {
+  try {
+    const res = await fetch(
+      `${SUPABASE_URL}/rest/v1/site_data?id=eq.main`,
+      {
+        method: 'PATCH',
+        headers: {
+          apikey: SUPABASE_ANON_KEY,
+          Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
+          'Content-Type': 'application/json',
+          Prefer: 'return=minimal'
+        },
+        body: JSON.stringify({ content: data })
+      }
+    );
+    if (!res.ok) throw new Error('Échec sauvegarde cloud: ' + res.status);
+  } catch (e) {
+    console.error(e);
+    if (typeof showToast === 'function') {
+      showToast('Enregistré sur cet appareil, mais la synchronisation en ligne a échoué (vérifiez la connexion).', 'error');
+    }
+  }
+}
+
+// Initialiser si données absentes (secours local avant la synchronisation)
 if (!localStorage.getItem(DB_KEY)) {
   localStorage.setItem(DB_KEY, JSON.stringify(INITIAL_DATA));
 }
+
+// Charge les données à jour depuis la base partagée AVANT de démarrer
+// l'application, pour que chaque visiteur voie les mêmes informations.
+window.mpaDataReady = syncFromCloud().finally(() => {
+  document.dispatchEvent(new Event('mpa-data-ready'));
+});
 
 // ── Helpers ──────────────────────────────────────────────────
 function formatDate(dateStr) {
