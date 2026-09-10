@@ -146,5 +146,13 @@ const App = {
   }
 };
 
-// Initialiser au chargement
-document.addEventListener('DOMContentLoaded', () => App.init());
+// Initialiser au chargement — on attend à la fois que la page soit prête
+// ET que les données à jour aient été récupérées depuis la base partagée,
+// pour ne jamais afficher de données obsolètes ou de démo par erreur.
+let _domReady = false;
+let _dataReady = false;
+function _tryInit() {
+  if (_domReady && _dataReady) App.init();
+}
+document.addEventListener('DOMContentLoaded', () => { _domReady = true; _tryInit(); });
+document.addEventListener('mpa-data-ready', () => { _dataReady = true; _tryInit(); });
