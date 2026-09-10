@@ -223,28 +223,37 @@ const Pages = {
             <div class="section-divider"></div>
           </div>
           <div class="contact-grid mt-4">
-            <div class="contact-card fade-in">
-              <div class="contact-icon">📍</div>
-              <h4 style="color:var(--navy);margin-bottom:.5rem;">Temple du Rocher des Âges</h4>
-              <p>Lomé, Togo<br>Quartier à préciser</p>
-              <a href="https://maps.google.com" target="_blank" class="btn btn-outline btn-sm mt-2">🗺 Itinéraire</a>
-            </div>
-            <div class="contact-card fade-in">
-              <div class="contact-icon">📍</div>
-              <h4 style="color:var(--navy);margin-bottom:.5rem;">Temple Ebenezer</h4>
-              <p>Lomé, Togo<br>Quartier à préciser</p>
-              <a href="https://maps.google.com" target="_blank" class="btn btn-outline btn-sm mt-2">🗺 Itinéraire</a>
-            </div>
-            <div class="contact-card fade-in">
-              <div class="contact-icon">📞</div>
-              <h4 style="color:var(--navy);margin-bottom:.5rem;">Téléphone</h4>
-              <p>+228 XX XX XX XX<br>Disponible du lun. au sam.</p>
-              <div class="social-links">
-                <a href="#" class="social-link" title="Facebook">f</a>
-                <a href="#" class="social-link" title="WhatsApp" style="background:#25D366;">💬</a>
-                <a href="#" class="social-link" title="YouTube" style="background:#FF0000;">▶</a>
-              </div>
-            </div>
+            ${(() => {
+              const t = DB.getTemples();
+              const rocher = t.rocher || {};
+              const ebenezer = t.ebenezer || {};
+              return `
+                <div class="contact-card fade-in">
+                  <div class="contact-icon">🏛</div>
+                  <h4 style="color:var(--navy);margin-bottom:.5rem;">${escapeHtml(rocher.nom || 'Temple du Rocher des Âges')}</h4>
+                  <p>${escapeHtml(rocher.adresse || 'Lomé, Togo')}</p>
+                  <p style="font-size:.85rem;color:var(--gold);margin-top:.35rem;font-weight:600;">📞 ${escapeHtml(rocher.tel || '')}</p>
+                  <a href="https://maps.google.com" target="_blank" class="btn btn-outline btn-sm mt-2">🗺 Itinéraire</a>
+                </div>
+                <div class="contact-card fade-in">
+                  <div class="contact-icon">⛪</div>
+                  <h4 style="color:var(--navy);margin-bottom:.5rem;">${escapeHtml(ebenezer.nom || 'Temple Ebenezer')}</h4>
+                  <p>${escapeHtml(ebenezer.adresse || 'Lomé, Togo')}</p>
+                  <p style="font-size:.85rem;color:var(--gold);margin-top:.35rem;font-weight:600;">📞 ${escapeHtml(ebenezer.tel || '')}</p>
+                  <a href="https://maps.google.com" target="_blank" class="btn btn-outline btn-sm mt-2">🗺 Itinéraire</a>
+                </div>
+                <div class="contact-card fade-in">
+                  <div class="contact-icon">📞</div>
+                  <h4 style="color:var(--navy);margin-bottom:.5rem;">Contacts Directs</h4>
+                  <p><strong>Rocher :</strong> ${escapeHtml(rocher.tel || 'Non renseigné')}<br><strong>Ebenezer :</strong> ${escapeHtml(ebenezer.tel || 'Non renseigné')}</p>
+                  <div class="social-links">
+                    <a href="#" class="social-link" title="Facebook">f</a>
+                    <a href="#" class="social-link" title="WhatsApp" style="background:#25D366;">💬</a>
+                    <a href="#" class="social-link" title="YouTube" style="background:#FF0000;">▶</a>
+                  </div>
+                </div>
+              `;
+            })()}
           </div>
         </div>
       </section>
@@ -254,33 +263,8 @@ const Pages = {
   // ── PAGE TEMPLE ─────────────────────────────────────────────
   renderTemple(templeId) {
     const isRocher = templeId === 'rocher';
-    const config = {
-      rocher: {
-        nom: 'Temple du Rocher des Âges',
-        emoji: '🏛',
-        logo: 'logo-rocher.jpg',
-        couleur: '#1E1F6B',
-        couleur2: '#2E2F8B',
-        responsable: 'Pasteur Kofi Mensah',
-        adresse: 'Lomé, Togo — Quartier à préciser',
-        horaires: ['Dimanche : 8h00 | 10h00 | 18h00', 'Mercredi (prière) : 18h30', 'Vendredi (jeunesse) : 18h00'],
-        tel: '+228 XX XX XX XX',
-        description: 'Le Temple du Rocher des Âges est le temple fondateur de la Mission Apostolique de Pentecôte au Togo. Fondé sur la Roche éternelle qu’est Jésus-Christ, ce lieu de culte accueille chaque semaine des centaines de fidèles avides de la Parole de Dieu et de la présence du Saint-Esprit.'
-      },
-      ebenezer: {
-        nom: 'Temple Ebenezer',
-        emoji: '⛪',
-        logo: 'logo-ebenezer.jpg',
-        couleur: '#13145A',
-        couleur2: '#8B1A1A',
-        responsable: 'Pasteur Amédée Dossou',
-        adresse: 'Lomé, Togo — Quartier à préciser',
-        horaires: ['Dimanche : 8h00 | 10h30 | 17h00', 'Mardi (prière) : 18h00', 'Jeudi (culte semaine) : 18h30'],
-        tel: '+228 XX XX XX XX',
-        description: 'Le Temple Ebenezer porte le nom de l’autel que Samuel érigea en disant : « Jusqu’ici l’Éternel nous a secourus » (1 Samuel 7:12). Ce temple est un lieu de reconnaissance, de prière fervente et d’adoration sincère. La communauté Ebenezer est connue pour sa chaleur fraternelle et sa ferveur spirituelle.'
-      }
-    };
-    const c = config[templeId] || config.rocher;
+    const c = DB.getTemple(templeId);
+    const horairesArr = Array.isArray(c.horaires) ? c.horaires : (c.horaires || '').split('\n').filter(Boolean);
     const messages = DB.getMessages(templeId).sort((a,b) => new Date(b.date) - new Date(a.date));
     const isAdmin = App.isAdmin;
 
@@ -289,28 +273,28 @@ const Pages = {
       <div class="breadcrumb">
         <a href="#" onclick="App.navigate('accueil');return false;">🏠 Accueil</a>
         <span class="sep">›</span>
-        <span class="current">${c.nom}</span>
+        <span class="current">${escapeHtml(c.nom)}</span>
       </div>
-      <section class="temple-page-hero" style="background:linear-gradient(135deg,${c.couleur},${c.couleur2});">
+      <section class="temple-page-hero" style="background:linear-gradient(135deg,${c.couleur||'#1E1F6B'},${c.couleur2||'#2E2F8B'});">
         <div class="container">
-          <img src="${c.logo}" alt="Logo ${c.nom}" style="width:120px;height:120px;border-radius:50%;border:4px solid rgba(255,255,255,.3);margin:0 auto 1.25rem;display:block;box-shadow:0 0 40px rgba(0,0,0,.3);object-fit:cover;">
-          <h1>${c.nom}</h1>
-          <p>${c.description}</p>
+          <img src="${c.logo}" alt="Logo ${escapeHtml(c.nom)}" style="width:120px;height:120px;border-radius:50%;border:4px solid rgba(255,255,255,.3);margin:0 auto 1.25rem;display:block;box-shadow:0 0 40px rgba(0,0,0,.3);object-fit:cover;">
+          <h1>${escapeHtml(c.nom)}</h1>
+          <p>${escapeHtml(c.description)}</p>
           <div class="temple-info-grid">
             <div class="temple-info-card">
               <div class="info-icon">👤</div>
               <div class="info-label">Responsable</div>
-              <div class="info-value">${c.responsable}</div>
+              <div class="info-value">${escapeHtml(c.responsable)}</div>
             </div>
             <div class="temple-info-card">
               <div class="info-icon">📍</div>
               <div class="info-label">Adresse</div>
-              <div class="info-value">${c.adresse}</div>
+              <div class="info-value">${escapeHtml(c.adresse)}</div>
             </div>
             <div class="temple-info-card">
               <div class="info-icon">📞</div>
               <div class="info-label">Téléphone</div>
-              <div class="info-value">${c.tel}</div>
+              <div class="info-value">${escapeHtml(c.tel)}</div>
             </div>
             <div class="temple-info-card">
               <div class="info-icon">🗺</div>
@@ -332,10 +316,10 @@ const Pages = {
             <div class="section-divider left"></div>
           </div>
           <div class="mission-grid mt-3">
-            ${c.horaires.map(h => `
+            ${horairesArr.map(h => `
               <div class="mission-card fade-in" style="text-align:left;">
                 <div style="font-size:1.8rem;margin-bottom:.75rem;">🕊</div>
-                <p style="color:var(--text);font-weight:500;font-size:.95rem;">${h}</p>
+                <p style="color:var(--text);font-weight:500;font-size:.95rem;">${escapeHtml(h)}</p>
               </div>
             `).join('')}
           </div>

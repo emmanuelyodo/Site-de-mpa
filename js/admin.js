@@ -86,6 +86,10 @@ const Admin = {
               <div style="font-size:2.5rem;font-family:'Playfair Display',serif;color:var(--gold);">${livres.length}</div>
               <h4>Livres</h4>
             </div>
+            <div class="mission-card" style="text-align:center;">
+              <div style="font-size:2.5rem;font-family:'Playfair Display',serif;color:var(--gold);">2</div>
+              <h4>Temples</h4>
+            </div>
           </div>
 
           <!-- TABS -->
@@ -93,6 +97,7 @@ const Admin = {
             <button class="admin-tab active" onclick="Admin.switchTab('messages',this)">🎙 Messages (${messages.length})</button>
             <button class="admin-tab" onclick="Admin.switchTab('affiches',this)">🎨 Affiches (${affiches.length})</button>
             <button class="admin-tab" onclick="Admin.switchTab('livres',this)">📚 Livres (${livres.length})</button>
+            <button class="admin-tab" onclick="Admin.switchTab('temples',this)">🏛 Temples & Contacts (2)</button>
           </div>
 
           <!-- TAB MESSAGES -->
@@ -194,6 +199,38 @@ const Admin = {
               </table>
             </div>
             ` : `<div class="empty-state"><div class="empty-icon">📚</div><h3>Aucun livre</h3></div>`}
+          </div>
+
+          <!-- TAB TEMPLES -->
+          <div id="tab-temples" class="admin-tab-content hidden">
+            <div class="admin-table-wrap">
+              <table class="admin-table">
+                <thead>
+                  <tr>
+                    <th>Temple</th>
+                    <th>Pasteur Responsable</th>
+                    <th>Téléphone</th>
+                    <th>Adresse</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  ${Object.values(DB.getTemples()).map(t => `
+                    <tr>
+                      <td><strong>${escapeHtml(t.nom)}</strong></td>
+                      <td>${escapeHtml(t.responsable)}</td>
+                      <td>${escapeHtml(t.tel)}</td>
+                      <td>${escapeHtml(t.adresse)}</td>
+                      <td>
+                        <div class="action-btns">
+                          <button class="btn-edit" onclick="Admin.openTempleForm('${t.id}')">✏ Modifier l'église</button>
+                        </div>
+                      </td>
+                    </tr>
+                  `).join('')}
+                </tbody>
+              </table>
+            </div>
           </div>
 
         </div>
@@ -319,9 +356,14 @@ const Admin = {
           <textarea id="affDescription" class="form-control" placeholder="Décrivez l'événement...">${aff ? escapeHtml(aff.description||'') : ''}</textarea>
         </div>
         <div class="form-group">
-          <label class="form-label" for="affImage">URL de l'affiche (image)</label>
-          <input type="url" id="affImage" class="form-control" placeholder="https://..." value="${aff ? escapeHtml(aff.imageUrl||'') : ''}">
-          <small style="font-size:.75rem;color:var(--text-muted);">Copiez l'URL d'une image hébergée en ligne (Google Drive, ImgBB, Unsplash…)</small>
+          <label class="form-label">Photo / Affiche de l'événement</label>
+          <div style="background:var(--bg-alt,#f8f9fa);padding:.75rem;border-radius:8px;border:1px dashed var(--border,#ddd);">
+            <label style="font-size:.8rem;color:var(--navy);font-weight:600;display:block;margin-bottom:.35rem;">📁 Choisir une photo sur mon ordinateur :</label>
+            <input type="file" accept="image/*" class="form-control" style="margin-bottom:.5rem;" onchange="handleFileUpload(this, 'affImage', 'affImagePreview')">
+            <label style="font-size:.8rem;color:var(--navy);font-weight:600;display:block;margin-bottom:.35rem;">🌐 Ou coller l'URL d'une photo en ligne (https://...) :</label>
+            <input type="text" id="affImage" class="form-control" placeholder="https://..." value="${aff ? escapeHtml(aff.imageUrl||'') : ''}">
+          </div>
+          <img id="affImagePreview" src="${aff ? escapeHtml(aff.imageUrl||'') : ''}" style="max-height:140px;margin-top:.75rem;border-radius:8px;display:${aff && aff.imageUrl ? 'block' : 'none'};object-fit:cover;border:1px solid #ddd;">
         </div>
         <div class="form-actions">
           <button type="button" class="btn btn-outline btn-sm" onclick="Admin.closeModal()">Annuler</button>
@@ -379,16 +421,22 @@ const Admin = {
           <textarea id="livResume" class="form-control" placeholder="Résumé du livre..." required>${livre ? escapeHtml(livre.resume) : ''}</textarea>
         </div>
         <div class="form-group">
-          <label class="form-label" for="livCover">URL de la couverture</label>
-          <input type="url" id="livCover" class="form-control" placeholder="https://..." value="${livre ? escapeHtml(livre.coverUrl||'') : ''}">
+          <label class="form-label">Couverture du livre</label>
+          <div style="background:var(--bg-alt,#f8f9fa);padding:.75rem;border-radius:8px;border:1px dashed var(--border,#ddd);">
+            <label style="font-size:.8rem;color:var(--navy);font-weight:600;display:block;margin-bottom:.35rem;">📁 Choisir une photo sur mon ordinateur :</label>
+            <input type="file" accept="image/*" class="form-control" style="margin-bottom:.5rem;" onchange="handleFileUpload(this, 'livCover', 'livCoverPreview')">
+            <label style="font-size:.8rem;color:var(--navy);font-weight:600;display:block;margin-bottom:.35rem;">🌐 Ou coller l'URL d'une photo en ligne (https://...) :</label>
+            <input type="text" id="livCover" class="form-control" placeholder="https://..." value="${livre ? escapeHtml(livre.coverUrl||'') : ''}">
+          </div>
+          <img id="livCoverPreview" src="${livre ? escapeHtml(livre.coverUrl||'') : ''}" style="max-height:140px;margin-top:.75rem;border-radius:8px;display:${livre && livre.coverUrl ? 'block' : 'none'};object-fit:cover;border:1px solid #ddd;">
         </div>
         <div class="form-group">
           <label class="form-label" for="livDownload">Lien de téléchargement (PDF)</label>
-          <input type="url" id="livDownload" class="form-control" placeholder="https://..." value="${livre ? escapeHtml(livre.downloadUrl||'') : ''}">
+          <input type="text" id="livDownload" class="form-control" placeholder="https://..." value="${livre ? escapeHtml(livre.downloadUrl||'') : ''}">
         </div>
         <div class="form-group">
           <label class="form-label" for="livCommande">Lien de commande</label>
-          <input type="url" id="livCommande" class="form-control" placeholder="https://..." value="${livre ? escapeHtml(livre.commandeUrl||'') : ''}">
+          <input type="text" id="livCommande" class="form-control" placeholder="https://..." value="${livre ? escapeHtml(livre.commandeUrl||'') : ''}">
         </div>
         <div class="form-actions">
           <button type="button" class="btn btn-outline btn-sm" onclick="Admin.closeModal()">Annuler</button>
@@ -425,6 +473,75 @@ const Admin = {
     DB.deleteLivre(id);
     showToast('Livre supprimé.', 'info');
     App.navigate(App.currentPage);
+  },
+
+  // ── FORMULAIRE TEMPLE ────────────────────────────────────────
+  openTempleForm(templeId) {
+    const temple = DB.getTemple(templeId);
+    const modal = document.getElementById('modalOverlay');
+    modal.querySelector('.modal-header h3').textContent = '✏ Modifier : ' + temple.nom;
+    const horairesTxt = Array.isArray(temple.horaires) ? temple.horaires.join('\n') : (temple.horaires || '');
+
+    modal.querySelector('.modal-body').innerHTML = `
+      <form id="templeForm" onsubmit="Admin.saveTemple(event, '${templeId}')">
+        <div class="form-group">
+          <label class="form-label" for="tmpNom">Nom du Temple *</label>
+          <input type="text" id="tmpNom" class="form-control" required value="${escapeHtml(temple.nom)}">
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="tmpResponsable">Pasteur Responsable / Dirigeant *</label>
+          <input type="text" id="tmpResponsable" class="form-control" placeholder="Ex: Pasteur Kofi Mensah" required value="${escapeHtml(temple.responsable)}">
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="tmpTel">Numéro de téléphone *</label>
+          <input type="text" id="tmpTel" class="form-control" placeholder="Ex: +228 90 00 00 00" required value="${escapeHtml(temple.tel)}">
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="tmpAdresse">Adresse du Temple *</label>
+          <input type="text" id="tmpAdresse" class="form-control" placeholder="Ex: Lomé, Togo - Quartier Tokoin" required value="${escapeHtml(temple.adresse)}">
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="tmpHoraires">Horaires des cultes (1 horaire par ligne)</label>
+          <textarea id="tmpHoraires" class="form-control" rows="4" placeholder="Dimanche : 8h00&#10;Mercredi : 18h30">${escapeHtml(horairesTxt)}</textarea>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="tmpDescription">Description de la communauté</label>
+          <textarea id="tmpDescription" class="form-control" rows="3">${escapeHtml(temple.description)}</textarea>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Photo / Logo du Temple</label>
+          <div style="background:var(--bg-alt,#f8f9fa);padding:.75rem;border-radius:8px;border:1px dashed var(--border,#ddd);">
+            <label style="font-size:.8rem;color:var(--navy);font-weight:600;display:block;margin-bottom:.35rem;">📁 Choisir une photo sur mon ordinateur :</label>
+            <input type="file" accept="image/*" class="form-control" style="margin-bottom:.5rem;" onchange="handleFileUpload(this, 'tmpLogo', 'tmpLogoPreview')">
+            <label style="font-size:.8rem;color:var(--navy);font-weight:600;display:block;margin-bottom:.35rem;">🌐 Ou coller l'URL d'une photo en ligne (https://...) :</label>
+            <input type="text" id="tmpLogo" class="form-control" placeholder="https://..." value="${escapeHtml(temple.logo||'')}">
+          </div>
+          <img id="tmpLogoPreview" src="${escapeHtml(temple.logo||'')}" style="max-height:100px;margin-top:.75rem;border-radius:50%;display:${temple.logo ? 'block' : 'none'};object-fit:cover;border:2px solid var(--gold);">
+        </div>
+        <div class="form-actions">
+          <button type="button" class="btn btn-outline btn-sm" onclick="Admin.closeModal()">Annuler</button>
+          <button type="submit" class="btn btn-primary btn-sm">💾 Mettre à jour les infos</button>
+        </div>
+      </form>
+    `;
+    modal.classList.add('open');
+  },
+
+  saveTemple(e, templeId) {
+    e.preventDefault();
+    const data = {
+      nom: document.getElementById('tmpNom').value.trim(),
+      responsable: document.getElementById('tmpResponsable').value.trim(),
+      tel: document.getElementById('tmpTel').value.trim(),
+      adresse: document.getElementById('tmpAdresse').value.trim(),
+      horaires: document.getElementById('tmpHoraires').value.split('\n').filter(Boolean),
+      description: document.getElementById('tmpDescription').value.trim(),
+      logo: document.getElementById('tmpLogo').value.trim()
+    };
+    DB.updateTemple(templeId, data);
+    showToast('Informations du temple enregistrées avec succès !', 'success');
+    this.closeModal();
+    App.navigate('admin-panel');
   },
 
   closeModal() {

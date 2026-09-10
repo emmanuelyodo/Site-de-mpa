@@ -181,7 +181,35 @@ const INITIAL_DATA = {
       downloadUrl: '',
       commandeUrl: ''
     }
-  ]
+  ],
+  temples: {
+    rocher: {
+      id: 'rocher',
+      nom: 'Temple du Rocher des Âges',
+      emoji: '🏛',
+      logo: 'logo-rocher.jpg',
+      couleur: '#1E1F6B',
+      couleur2: '#2E2F8B',
+      responsable: 'Pasteur Kofi Mensah',
+      adresse: 'Lomé, Togo — Quartier à préciser',
+      horaires: ['Dimanche : 8h00 | 10h00 | 18h00', 'Mercredi (prière) : 18h30', 'Vendredi (jeunesse) : 18h00'],
+      tel: '+228 XX XX XX XX',
+      description: 'Le Temple du Rocher des Âges est le temple fondateur de la Mission Apostolique de Pentecôte au Togo. Fondé sur la Roche éternelle qu’est Jésus-Christ, ce lieu de culte accueille chaque semaine des centaines de fidèles avides de la Parole de Dieu et de la présence du Saint-Esprit.'
+    },
+    ebenezer: {
+      id: 'ebenezer',
+      nom: 'Temple Ebenezer',
+      emoji: '⛪',
+      logo: 'logo-ebenezer.jpg',
+      couleur: '#13145A',
+      couleur2: '#8B1A1A',
+      responsable: 'Pasteur Amédée Dossou',
+      adresse: 'Lomé, Togo — Quartier à préciser',
+      horaires: ['Dimanche : 8h00 | 10h30 | 17h00', 'Mardi (prière) : 18h00', 'Jeudi (culte semaine) : 18h30'],
+      tel: '+228 XX XX XX XX',
+      description: 'Le Temple Ebenezer porte le nom de l’autel que Samuel érigea en disant : « Jusqu’ici l’Éternel nous a secourus » (1 Samuel 7:12). Ce temple est un lieu de reconnaissance, de prière fervente et d’adoration sincère. La communauté Ebenezer est connue pour sa chaleur fraternelle et sa ferveur spirituelle.'
+    }
+  }
 };
 
 // ── API de données ───────────────────────────────────────────
@@ -189,7 +217,11 @@ const DB = {
   _get() {
     try {
       const raw = localStorage.getItem(DB_KEY);
-      if (raw) return JSON.parse(raw);
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        if (!parsed.temples) parsed.temples = JSON.parse(JSON.stringify(INITIAL_DATA.temples));
+        return parsed;
+      }
     } catch(e) {}
     return JSON.parse(JSON.stringify(INITIAL_DATA));
   },
@@ -299,6 +331,32 @@ const DB = {
     this._save(data);
   },
 
+  // ── Temples ──────────────────────────────────────────────────
+  getTemples() {
+    const data = this._get();
+    if (!data.temples) {
+      data.temples = JSON.parse(JSON.stringify(INITIAL_DATA.temples));
+      this._save(data);
+    }
+    return data.temples;
+  },
+
+  getTemple(id) {
+    const temples = this.getTemples();
+    return temples[id] || temples.rocher;
+  },
+
+  updateTemple(id, updates) {
+    const data = this._get();
+    if (!data.temples) data.temples = JSON.parse(JSON.stringify(INITIAL_DATA.temples));
+    if (data.temples[id]) {
+      data.temples[id] = { ...data.temples[id], ...updates };
+      this._save(data);
+      return true;
+    }
+    return false;
+  },
+
   // ── Reset ────────────────────────────────────────────────────
   reset() {
     localStorage.removeItem(DB_KEY);
@@ -346,4 +404,51 @@ function showToast(msg, type = 'success') {
   toast.innerHTML = `<span>${icons[type] || '✅'}</span> ${escapeHtml(msg)}`;
   container.appendChild(toast);
   setTimeout(() => toast.remove(), 3200);
+}
+
+// Helper pour uploader et compresser les images depuis l'ordinateur
+function handleFileUpload(fileInput, targetInputId, previewImgId) {
+  const file = fileInput.files[0];
+  if (!file) return;
+  if (!file.type.startsWith('image/')) {
+    showToast('Veuillez sélectionner un fichier image valide.', 'error');
+    return;
+  }
+
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    const img = new Image();
+    img.onload = function() {
+      const canvas = document.createElement('canvas');
+      const maxDim = 900;
+      let width = img.width;
+      let height = img.height;
+
+      if (width > height && width > maxDim) {
+        height = Math.round((height * maxDim) / width);
+        width = maxDim;
+      } else if (height > maxDim) {
+        width = Math.round((width * maxDim) / height);
+        height = maxDim;
+      }
+
+      canvas.width = width;
+      canvas.height = height;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(img, 0, 0, width, height);
+
+      const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.85);
+      const targetInput = document.getElementById(targetInputId);
+      if (targetInput) targetInput.value = compressedDataUrl;
+
+      const previewImg = document.getElementById(previewImgId);
+      if (previewImg) {
+        previewImg.src = compressedDataUrl;
+        previewImg.style.display = 'block';
+      }
+      showToast('Image chargée depuis votre ordinateur !', 'success');
+    };
+    img.src = e.target.result;
+  };
+  reader.readAsDataURL(file);
 }
