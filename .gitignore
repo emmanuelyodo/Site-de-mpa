@@ -1,0 +1,13 @@
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+*.lnk
+
+# Vercel
+.vercel
+
+# Node / Editor
+node_modules/
+.vscode/
+.idea/
