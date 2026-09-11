@@ -57,6 +57,8 @@ const Admin = {
     const messages = DB.getMessages().sort((a,b) => new Date(b.date)-new Date(a.date));
     const affiches = DB.getAffiches();
     const livres = DB.getLivres();
+    const podcasts = DB.getPodcasts().sort((a,b) => (a.numero||0)-(b.numero||0));
+    const audios = DB.getAudios().sort((a,b) => new Date(b.date)-new Date(a.date));
 
     return `
       <div class="admin-panel">
@@ -90,6 +92,14 @@ const Admin = {
               <div style="font-size:2.5rem;font-family:'Playfair Display',serif;color:var(--gold);">2</div>
               <h4>Temples</h4>
             </div>
+            <div class="mission-card" style="text-align:center;">
+              <div style="font-size:2.5rem;font-family:'Playfair Display',serif;color:var(--gold);">${podcasts.length}</div>
+              <h4>Podcasts</h4>
+            </div>
+            <div class="mission-card" style="text-align:center;">
+              <div style="font-size:2.5rem;font-family:'Playfair Display',serif;color:var(--gold);">${audios.length}</div>
+              <h4>Audios</h4>
+            </div>
           </div>
 
           <!-- TABS -->
@@ -97,6 +107,8 @@ const Admin = {
             <button class="admin-tab active" onclick="Admin.switchTab('messages',this)">🎙 Messages (${messages.length})</button>
             <button class="admin-tab" onclick="Admin.switchTab('affiches',this)">🎨 Affiches (${affiches.length})</button>
             <button class="admin-tab" onclick="Admin.switchTab('livres',this)">📚 Livres (${livres.length})</button>
+            <button class="admin-tab" onclick="Admin.switchTab('podcasts',this)">🎧 Podcasts (${podcasts.length})</button>
+            <button class="admin-tab" onclick="Admin.switchTab('audios',this)">🔊 Audios (${audios.length})</button>
             <button class="admin-tab" onclick="Admin.switchTab('temples',this)">🏛 Temples & Contacts (2)</button>
           </div>
 
@@ -199,6 +211,68 @@ const Admin = {
               </table>
             </div>
             ` : `<div class="empty-state"><div class="empty-icon">📚</div><h3>Aucun livre</h3></div>`}
+          </div>
+
+          <!-- TAB PODCASTS -->
+          <div id="tab-podcasts" class="admin-tab-content hidden">
+            <div style="display:flex;justify-content:flex-end;margin-bottom:1rem;">
+              <button class="btn btn-primary btn-sm" onclick="Admin.openPodcastForm()">+ Nouvel épisode</button>
+            </div>
+            ${podcasts.length > 0 ? `
+            <div class="admin-table-wrap">
+              <table class="admin-table">
+                <thead>
+                  <tr><th>Épisode</th><th>Titre</th><th>Date</th><th>Actions</th></tr>
+                </thead>
+                <tbody>
+                  ${podcasts.map(p => `
+                    <tr>
+                      <td><strong>#${p.numero||'—'}</strong></td>
+                      <td>${escapeHtml(p.titre)}</td>
+                      <td>${formatDate(p.date)}</td>
+                      <td>
+                        <div class="action-btns">
+                          <button class="btn-edit" onclick="Admin.openPodcastForm(${p.id})">✏ Modifier</button>
+                          <button class="btn-delete" onclick="Admin.deletePodcast(${p.id})">🗑 Supprimer</button>
+                        </div>
+                      </td>
+                    </tr>
+                  `).join('')}
+                </tbody>
+              </table>
+            </div>
+            ` : `<div class="empty-state"><div class="empty-icon">🎧</div><h3>Aucun épisode</h3></div>`}
+          </div>
+
+          <!-- TAB AUDIOS -->
+          <div id="tab-audios" class="admin-tab-content hidden">
+            <div style="display:flex;justify-content:flex-end;margin-bottom:1rem;">
+              <button class="btn btn-primary btn-sm" onclick="Admin.openAudioForm()">+ Nouvel audio</button>
+            </div>
+            ${audios.length > 0 ? `
+            <div class="admin-table-wrap">
+              <table class="admin-table">
+                <thead>
+                  <tr><th>Titre</th><th>Temple</th><th>Date</th><th>Actions</th></tr>
+                </thead>
+                <tbody>
+                  ${audios.map(a => `
+                    <tr>
+                      <td><strong>${escapeHtml(a.titre)}</strong></td>
+                      <td><span class="affiche-temple-tag ${templeTagClass(a.temple)}">${templeLabel(a.temple)}</span></td>
+                      <td>${formatDate(a.date)}</td>
+                      <td>
+                        <div class="action-btns">
+                          <button class="btn-edit" onclick="Admin.openAudioForm(${a.id})">✏ Modifier</button>
+                          <button class="btn-delete" onclick="Admin.deleteAudio(${a.id})">🗑 Supprimer</button>
+                        </div>
+                      </td>
+                    </tr>
+                  `).join('')}
+                </tbody>
+              </table>
+            </div>
+            ` : `<div class="empty-state"><div class="empty-icon">🔊</div><h3>Aucun audio</h3></div>`}
           </div>
 
           <!-- TAB TEMPLES -->
@@ -472,6 +546,135 @@ const Admin = {
     if (!confirm('Supprimer ce livre ?')) return;
     DB.deleteLivre(id);
     showToast('Livre supprimé.', 'info');
+    App.navigate(App.currentPage);
+  },
+
+  // ── FORMULAIRE PODCAST (épisode numéroté) ─────────────────────
+  openPodcastForm(editId = null) {
+    const podcast = editId ? DB.getPodcasts().find(p => p.id === editId) : null;
+    const modal = document.getElementById('modalOverlay');
+    modal.querySelector('.modal-header h3').textContent = podcast ? '✏ Modifier l\'épisode' : '+ Nouvel épisode';
+    modal.querySelector('.modal-body').innerHTML = `
+      <form id="podcastForm" onsubmit="Admin.savePodcast(event,${editId||'null'})">
+        <div class="form-group">
+          <label class="form-label" for="podNumero">Numéro d'épisode *</label>
+          <input type="number" id="podNumero" class="form-control" min="1" required value="${podcast ? podcast.numero : ''}">
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="podTitre">Titre *</label>
+          <input type="text" id="podTitre" class="form-control" placeholder="Titre de l'épisode" required value="${podcast ? escapeHtml(podcast.titre) : ''}">
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="podDate">Date *</label>
+          <input type="date" id="podDate" class="form-control" required value="${podcast ? podcast.date : ''}">
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="podDescription">Description</label>
+          <textarea id="podDescription" class="form-control" placeholder="Résumé de l'épisode...">${podcast ? escapeHtml(podcast.description||'') : ''}</textarea>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="podAudio">Lien du fichier audio</label>
+          <input type="text" id="podAudio" class="form-control" placeholder="https://..." value="${podcast ? escapeHtml(podcast.audioUrl||'') : ''}">
+        </div>
+        <div class="form-actions">
+          <button type="button" class="btn btn-outline btn-sm" onclick="Admin.closeModal()">Annuler</button>
+          <button type="submit" class="btn btn-primary btn-sm">${podcast ? '💾 Mettre à jour' : '✅ Enregistrer'}</button>
+        </div>
+      </form>
+    `;
+    modal.classList.add('open');
+  },
+
+  savePodcast(e, editId) {
+    e.preventDefault();
+    const data = {
+      numero: parseInt(document.getElementById('podNumero').value, 10),
+      titre: document.getElementById('podTitre').value.trim(),
+      date: document.getElementById('podDate').value,
+      description: document.getElementById('podDescription').value.trim(),
+      audioUrl: document.getElementById('podAudio').value.trim()
+    };
+    if (editId) {
+      DB.updatePodcast(editId, data);
+      showToast('Épisode mis à jour !', 'success');
+    } else {
+      DB.addPodcast(data);
+      showToast('Épisode ajouté !', 'success');
+    }
+    this.closeModal();
+    App.navigate(App.currentPage);
+  },
+
+  deletePodcast(id) {
+    if (!confirm('Supprimer cet épisode ?')) return;
+    DB.deletePodcast(id);
+    showToast('Épisode supprimé.', 'info');
+    App.navigate(App.currentPage);
+  },
+
+  // ── FORMULAIRE AUDIO (enregistrement ponctuel) ─────────────────
+  openAudioForm(editId = null) {
+    const audio = editId ? DB.getAudios().find(a => a.id === editId) : null;
+    const modal = document.getElementById('modalOverlay');
+    modal.querySelector('.modal-header h3').textContent = audio ? '✏ Modifier l\'audio' : '+ Nouvel audio';
+    modal.querySelector('.modal-body').innerHTML = `
+      <form id="audioForm" onsubmit="Admin.saveAudio(event,${editId||'null'})">
+        <div class="form-group">
+          <label class="form-label" for="audTemple">Temple *</label>
+          <select id="audTemple" class="form-control" required>
+            <option value="rocher" ${(!audio || audio.temple==='rocher')?'selected':''}>Rocher des Âges</option>
+            <option value="ebenezer" ${(audio && audio.temple==='ebenezer')?'selected':''}>Temple Ebenezer</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="audTitre">Titre *</label>
+          <input type="text" id="audTitre" class="form-control" placeholder="Titre de l'enregistrement" required value="${audio ? escapeHtml(audio.titre) : ''}">
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="audDate">Date *</label>
+          <input type="date" id="audDate" class="form-control" required value="${audio ? audio.date : ''}">
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="audDescription">Description</label>
+          <textarea id="audDescription" class="form-control" placeholder="Ex : culte, temps de louange...">${audio ? escapeHtml(audio.description||'') : ''}</textarea>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="audAudio">Lien du fichier audio</label>
+          <input type="text" id="audAudio" class="form-control" placeholder="https://..." value="${audio ? escapeHtml(audio.audioUrl||'') : ''}">
+        </div>
+        <div class="form-actions">
+          <button type="button" class="btn btn-outline btn-sm" onclick="Admin.closeModal()">Annuler</button>
+          <button type="submit" class="btn btn-primary btn-sm">${audio ? '💾 Mettre à jour' : '✅ Enregistrer'}</button>
+        </div>
+      </form>
+    `;
+    modal.classList.add('open');
+  },
+
+  saveAudio(e, editId) {
+    e.preventDefault();
+    const data = {
+      temple: document.getElementById('audTemple').value,
+      titre: document.getElementById('audTitre').value.trim(),
+      date: document.getElementById('audDate').value,
+      description: document.getElementById('audDescription').value.trim(),
+      audioUrl: document.getElementById('audAudio').value.trim()
+    };
+    if (editId) {
+      DB.updateAudio(editId, data);
+      showToast('Audio mis à jour !', 'success');
+    } else {
+      DB.addAudio(data);
+      showToast('Audio ajouté !', 'success');
+    }
+    this.closeModal();
+    App.navigate(App.currentPage);
+  },
+
+  deleteAudio(id) {
+    if (!confirm('Supprimer cet audio ?')) return;
+    DB.deleteAudio(id);
+    showToast('Audio supprimé.', 'info');
     App.navigate(App.currentPage);
   },
 
