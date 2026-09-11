@@ -309,6 +309,8 @@ p{font-size:1rem;color:var(--text-muted);}
 .message-info-row strong{color:var(--text);}
 .audio-player-wrap{margin-top:1rem;}
 .audio-player-wrap audio{width:100%;border-radius:8px;height:36px;}
+.video-embed-wrap{margin-top:1rem;position:relative;width:100%;padding-top:56.25%;border-radius:8px;overflow:hidden;background:#000;}
+.video-embed-wrap iframe,.video-embed-wrap video{position:absolute;top:0;left:0;width:100%;height:100%;border:0;}
 .video-link{
   display:inline-flex;align-items:center;gap:.4rem;
   font-size:.85rem;font-weight:600;color:var(--red);
