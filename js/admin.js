@@ -107,7 +107,7 @@ const Admin = {
             <button class="admin-tab active" onclick="Admin.switchTab('messages',this)">🎙 Messages (${messages.length})</button>
             <button class="admin-tab" onclick="Admin.switchTab('affiches',this)">🎨 Affiches (${affiches.length})</button>
             <button class="admin-tab" onclick="Admin.switchTab('livres',this)">📚 Livres (${livres.length})</button>
-            <button class="admin-tab" onclick="Admin.switchTab('podcasts',this)">🎧 Podcasts (${podcasts.length})</button>
+            <button class="admin-tab" onclick="Admin.switchTab('podcasts',this)">🎬 Podcasts (${podcasts.length})</button>
             <button class="admin-tab" onclick="Admin.switchTab('audios',this)">🔊 Audios (${audios.length})</button>
             <button class="admin-tab" onclick="Admin.switchTab('temples',this)">🏛 Temples & Contacts (2)</button>
           </div>
@@ -241,7 +241,7 @@ const Admin = {
                 </tbody>
               </table>
             </div>
-            ` : `<div class="empty-state"><div class="empty-icon">🎧</div><h3>Aucun épisode</h3></div>`}
+            ` : `<div class="empty-state"><div class="empty-icon">🎬</div><h3>Aucun épisode</h3></div>`}
           </div>
 
           <!-- TAB AUDIOS -->
@@ -573,8 +573,8 @@ const Admin = {
           <textarea id="podDescription" class="form-control" placeholder="Résumé de l'épisode...">${podcast ? escapeHtml(podcast.description||'') : ''}</textarea>
         </div>
         <div class="form-group">
-          <label class="form-label" for="podAudio">Lien du fichier audio</label>
-          <input type="text" id="podAudio" class="form-control" placeholder="https://..." value="${podcast ? escapeHtml(podcast.audioUrl||'') : ''}">
+          <label class="form-label" for="podVideo">Lien de la vidéo (YouTube, Vimeo ou lien direct .mp4)</label>
+          <input type="text" id="podVideo" class="form-control" placeholder="https://youtube.com/watch?v=..." value="${podcast ? escapeHtml(podcast.videoUrl||'') : ''}">
         </div>
         <div class="form-actions">
           <button type="button" class="btn btn-outline btn-sm" onclick="Admin.closeModal()">Annuler</button>
@@ -592,7 +592,7 @@ const Admin = {
       titre: document.getElementById('podTitre').value.trim(),
       date: document.getElementById('podDate').value,
       description: document.getElementById('podDescription').value.trim(),
-      audioUrl: document.getElementById('podAudio').value.trim()
+      videoUrl: document.getElementById('podVideo').value.trim()
     };
     if (editId) {
       DB.updatePodcast(editId, data);
