@@ -576,6 +576,11 @@ const Admin = {
           <label class="form-label" for="podVideo">Lien de la vidéo (YouTube, Vimeo ou lien direct .mp4)</label>
           <input type="text" id="podVideo" class="form-control" placeholder="https://youtube.com/watch?v=..." value="${podcast ? escapeHtml(podcast.videoUrl||'') : ''}">
         </div>
+        <div class="form-group">
+          <label class="form-label" for="podVideoFile">Ou importez une vidéo depuis votre ordinateur</label>
+          <input type="file" id="podVideoFile" class="form-control" accept="video/*" onchange="Admin.uploadPodcastVideo(this)">
+          <div id="podUploadStatus" style="font-size:.85rem;margin-top:.4rem;color:var(--text-muted);"></div>
+        </div>
         <div class="form-actions">
           <button type="button" class="btn btn-outline btn-sm" onclick="Admin.closeModal()">Annuler</button>
           <button type="submit" class="btn btn-primary btn-sm">${podcast ? '💾 Mettre à jour' : '✅ Enregistrer'}</button>
@@ -612,6 +617,56 @@ const Admin = {
     App.navigate(App.currentPage);
   },
 
+  async uploadPodcastVideo(input) {
+    const file = input.files[0];
+    if (!file) return;
+    const status = document.getElementById('podUploadStatus');
+    const maxMB = 50;
+    if (file.size > maxMB * 1024 * 1024) {
+      status.textContent = `⚠ Fichier trop volumineux (max ${maxMB} Mo). Utilisez plutôt un lien YouTube.`;
+      status.style.color = '#b33';
+      input.value = '';
+      return;
+    }
+    status.textContent = '⏳ Import en cours, ne fermez pas cette fenêtre...';
+    status.style.color = 'var(--text-muted)';
+    try {
+      const url = await uploadMediaFile(file, 'podcasts');
+      document.getElementById('podVideo').value = url;
+      status.textContent = '✅ Vidéo importée avec succès.';
+      status.style.color = 'green';
+    } catch (e) {
+      console.error(e);
+      status.textContent = '❌ Échec de l\'import. Vérifiez votre connexion et réessayez.';
+      status.style.color = '#b33';
+    }
+  },
+
+  async uploadAudioFile(input) {
+    const file = input.files[0];
+    if (!file) return;
+    const status = document.getElementById('audUploadStatus');
+    const maxMB = 50;
+    if (file.size > maxMB * 1024 * 1024) {
+      status.textContent = `⚠ Fichier trop volumineux (max ${maxMB} Mo).`;
+      status.style.color = '#b33';
+      input.value = '';
+      return;
+    }
+    status.textContent = '⏳ Import en cours, ne fermez pas cette fenêtre...';
+    status.style.color = 'var(--text-muted)';
+    try {
+      const url = await uploadMediaFile(file, 'audios');
+      document.getElementById('audAudio').value = url;
+      status.textContent = '✅ Audio importé avec succès.';
+      status.style.color = 'green';
+    } catch (e) {
+      console.error(e);
+      status.textContent = '❌ Échec de l\'import. Vérifiez votre connexion et réessayez.';
+      status.style.color = '#b33';
+    }
+  },
+
   // ── FORMULAIRE AUDIO (enregistrement ponctuel) ─────────────────
   openAudioForm(editId = null) {
     const audio = editId ? DB.getAudios().find(a => a.id === editId) : null;
@@ -641,6 +696,11 @@ const Admin = {
         <div class="form-group">
           <label class="form-label" for="audAudio">Lien du fichier audio</label>
           <input type="text" id="audAudio" class="form-control" placeholder="https://..." value="${audio ? escapeHtml(audio.audioUrl||'') : ''}">
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="audAudioFile">Ou importez un audio depuis votre ordinateur</label>
+          <input type="file" id="audAudioFile" class="form-control" accept="audio/*" onchange="Admin.uploadAudioFile(this)">
+          <div id="audUploadStatus" style="font-size:.85rem;margin-top:.4rem;color:var(--text-muted);"></div>
         </div>
         <div class="form-actions">
           <button type="button" class="btn btn-outline btn-sm" onclick="Admin.closeModal()">Annuler</button>
