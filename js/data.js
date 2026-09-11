@@ -505,6 +505,31 @@ async function pushToCloud(data) {
   }
 }
 
+// ── Import de fichiers (vidéo/audio) vers le stockage Supabase ─
+// Renvoie l'URL publique du fichier téléversé, pour l'insérer
+// directement dans un champ "lien vidéo" ou "lien audio".
+async function uploadMediaFile(file, folder = 'divers') {
+  const safeName = file.name.replace(/[^a-zA-Z0-9.\-_]/g, '_');
+  const path = `${folder}/${Date.now()}_${safeName}`;
+  const res = await fetch(
+    `${SUPABASE_URL}/storage/v1/object/media/${path}`,
+    {
+      method: 'POST',
+      headers: {
+        apikey: SUPABASE_ANON_KEY,
+        Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
+        'Content-Type': file.type || 'application/octet-stream'
+      },
+      body: file
+    }
+  );
+  if (!res.ok) {
+    const errText = await res.text();
+    throw new Error('Échec du téléversement (' + res.status + '): ' + errText);
+  }
+  return `${SUPABASE_URL}/storage/v1/object/public/media/${path}`;
+}
+
 // Initialiser si données absentes (secours local avant la synchronisation)
 if (!localStorage.getItem(DB_KEY)) {
   localStorage.setItem(DB_KEY, JSON.stringify(INITIAL_DATA));
