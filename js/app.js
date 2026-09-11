@@ -102,6 +102,12 @@ const App = {
       case 'livres':
         html = Pages.renderLivres();
         break;
+      case 'podcasts':
+        html = Pages.renderPodcasts();
+        break;
+      case 'audios':
+        html = Pages.renderAudios();
+        break;
       case 'admin':
         if (this.isAdmin) {
           this.navigate('admin-panel', pushHash);
