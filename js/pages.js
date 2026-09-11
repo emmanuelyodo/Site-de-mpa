@@ -454,6 +454,100 @@ const Pages = {
     `;
   },
 
+  // ── PAGE PODCASTS ────────────────────────────────────────────
+  renderPodcasts() {
+    const isAdmin = App.isAdmin;
+    const podcasts = DB.getPodcasts();
+
+    return `
+      <div class="breadcrumb">
+        <a href="#" onclick="App.navigate('accueil');return false;">🏠 Accueil</a>
+        <span class="sep">›</span>
+        <span class="current">Podcasts</span>
+      </div>
+      <section class="temple-page-hero" style="background:linear-gradient(135deg,#3a1a4a,#6a2d8b);">
+        <div class="container">
+          <div style="font-size:3rem;margin-bottom:1rem;">🎬</div>
+          <h1>Podcasts MPA</h1>
+          <p>Notre série vidéo d'épisodes réguliers pour approfondir votre foi, où que vous soyez.</p>
+        </div>
+      </section>
+      <section class="section" id="podcasts-content">
+        <div class="container">
+          <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem;margin-bottom:2rem;">
+            <div>
+              <span class="section-tag">Épisodes</span>
+              <h2>Tous les épisodes</h2>
+            </div>
+            ${isAdmin ? `<button class="btn btn-primary btn-sm" onclick="Admin.openPodcastForm()">+ Nouvel épisode</button>` : ''}
+          </div>
+          <div class="livres-grid">
+            ${podcasts.length > 0 ? podcasts.map(p => Pages.renderPodcastCard(p, isAdmin)).join('') : `
+              <div class="empty-state" style="grid-column:1/-1">
+                <div class="empty-icon">🎬</div>
+                <h3>Aucun épisode pour l'instant</h3>
+                <p>Le premier épisode sera bientôt disponible.</p>
+              </div>
+            `}
+          </div>
+        </div>
+      </section>
+    `;
+  },
+
+  // ── PAGE AUDIOS ──────────────────────────────────────────────
+  renderAudios() {
+    const isAdmin = App.isAdmin;
+    const audios = DB.getAudios();
+
+    return `
+      <div class="breadcrumb">
+        <a href="#" onclick="App.navigate('accueil');return false;">🏠 Accueil</a>
+        <span class="sep">›</span>
+        <span class="current">Audios</span>
+      </div>
+      <section class="temple-page-hero" style="background:linear-gradient(135deg,#1a2a4a,#2d5a8b);">
+        <div class="container">
+          <div style="font-size:3rem;margin-bottom:1rem;">🔊</div>
+          <h1>Enregistrements Audio</h1>
+          <p>Retrouvez les enregistrements de nos cultes, temps de louange et moments forts.</p>
+        </div>
+      </section>
+      <section class="section" id="audios-content">
+        <div class="container">
+          <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem;margin-bottom:1.5rem;">
+            <div class="affiches-filters" id="audio-filters">
+              <button class="filter-btn active" onclick="Pages.filterAudios('all',this)">Tous</button>
+              <button class="filter-btn" onclick="Pages.filterAudios('rocher',this)">Rocher des Âges</button>
+              <button class="filter-btn" onclick="Pages.filterAudios('ebenezer',this)">Ebenezer</button>
+            </div>
+            ${isAdmin ? `<button class="btn btn-primary btn-sm" onclick="Admin.openAudioForm()">+ Ajouter un audio</button>` : ''}
+          </div>
+          <div id="audios-list">
+            ${audios.length > 0 ? audios.map(a => Pages.renderAudioCard(a, isAdmin)).join('') : `
+              <div class="empty-state">
+                <div class="empty-icon">🔊</div>
+                <h3>Aucun enregistrement disponible</h3>
+                <p>Les enregistrements seront bientôt disponibles.</p>
+              </div>
+            `}
+          </div>
+        </div>
+      </section>
+    `;
+  },
+
+  filterAudios(temple, btn) {
+    document.querySelectorAll('#audio-filters .filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    const audios = DB.getAudios(temple);
+    const list = document.getElementById('audios-list');
+    if (!list) return;
+    list.innerHTML = audios.length > 0
+      ? audios.map(a => Pages.renderAudioCard(a, App.isAdmin)).join('')
+      : `<div class="empty-state"><div class="empty-icon">🔊</div><h3>Aucun enregistrement pour ce filtre</h3></div>`;
+  },
+
   // ── COMPOSANTS ──────────────────────────────────────────────
   renderMessageCard(m, isAdmin = false) {
     const audioHtml = m.audioUrl ? `
@@ -533,6 +627,84 @@ const Pages = {
           <h4>${escapeHtml(l.titre)}</h4>
           <div class="livre-author">par ${escapeHtml(l.auteur)}</div>
           <p class="livre-summary">${escapeHtml(l.resume)}</p>
+          ${adminBtns}
+        </div>
+      </div>`;
+  },
+
+  renderPodcastCard(p, isAdmin = false) {
+    const videoHtml = p.videoUrl ? Pages.renderVideoEmbed(p.videoUrl) : `<p style="font-size:.85rem;color:var(--text-muted);">Vidéo à venir.</p>`;
+    const adminBtns = isAdmin ? `
+      <div class="action-btns mt-1">
+        <button class="btn-edit" onclick="Admin.openPodcastForm(${p.id})">✏ Modifier</button>
+        <button class="btn-delete" onclick="Admin.deletePodcast(${p.id})">🗑 Supprimer</button>
+      </div>` : '';
+
+    return `
+      <div class="livre-card fade-in">
+        <div class="livre-cover" style="background:linear-gradient(135deg,#3a1a4a,#6a2d8b);">
+          <span style="font-size:3.5rem;">🎬</span>
+        </div>
+        <div class="livre-body">
+          <span class="affiche-temple-tag tag-general">Épisode ${p.numero || '—'}</span>
+          <h4>${escapeHtml(p.titre)}</h4>
+          <div class="livre-author">📅 ${formatDate(p.date)}</div>
+          <p class="livre-summary">${escapeHtml(p.description||'')}</p>
+          ${videoHtml}
+          ${adminBtns}
+        </div>
+      </div>`;
+  },
+
+  // Intègre une vidéo YouTube/Vimeo si reconnue, sinon affiche un lecteur
+  // vidéo natif (fichier direct .mp4 etc.), sinon un simple lien.
+  renderVideoEmbed(url) {
+    const safeUrl = escapeHtml(url);
+    const yt = url.match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/|shorts\/))([\w-]{11})/);
+    if (yt) {
+      return `<div class="video-embed-wrap">
+        <iframe src="https://www.youtube.com/embed/${yt[1]}" title="Vidéo" frameborder="0"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe>
+      </div>`;
+    }
+    const vimeo = url.match(/vimeo\.com\/(\d+)/);
+    if (vimeo) {
+      return `<div class="video-embed-wrap">
+        <iframe src="https://player.vimeo.com/video/${vimeo[1]}" title="Vidéo" frameborder="0"
+          allow="autoplay; fullscreen; picture-in-picture" allowfullscreen loading="lazy"></iframe>
+      </div>`;
+    }
+    if (/\.(mp4|webm|ogg)(\?.*)?$/i.test(url)) {
+      return `<div class="video-embed-wrap"><video controls preload="none" src="${safeUrl}"></video></div>`;
+    }
+    return `<a href="${safeUrl}" target="_blank" class="video-link">▶ Regarder l'épisode</a>`;
+  },
+
+  renderAudioCard(a, isAdmin = false) {
+    const audioHtml = a.audioUrl ? `
+      <div class="audio-player-wrap">
+        <audio controls preload="none">
+          <source src="${escapeHtml(a.audioUrl)}" type="audio/mpeg">
+        </audio>
+      </div>` : `<p style="font-size:.85rem;color:var(--text-muted);">Audio à venir.</p>`;
+    const adminBtns = isAdmin ? `
+      <div class="action-btns mt-2">
+        <button class="btn-edit" onclick="Admin.openAudioForm(${a.id})">✏ Modifier</button>
+        <button class="btn-delete" onclick="Admin.deleteAudio(${a.id})">🗑 Supprimer</button>
+      </div>` : '';
+
+    return `
+      <div class="message-card fade-in">
+        <div class="message-card-header">
+          <h4>${escapeHtml(a.titre)}</h4>
+          <span class="message-badge">${templeLabel(a.temple)}</span>
+        </div>
+        <div class="message-card-body">
+          <div class="message-info">
+            <div class="message-info-row">📅 <strong>Date :</strong> ${formatDate(a.date)}</div>
+            ${a.description ? `<div class="message-info-row" style="align-items:flex-start;">💬 <span>${escapeHtml(a.description)}</span></div>` : ''}
+          </div>
+          ${audioHtml}
           ${adminBtns}
         </div>
       </div>`;
