@@ -189,6 +189,26 @@ const INITIAL_DATA = {
       commandeUrl: ''
     }
   ],
+  podcasts: [
+    {
+      id: 1,
+      numero: 1,
+      titre: 'Comprendre le baptême du Saint-Esprit',
+      description: 'Premier épisode de notre série mensuelle : une exploration accessible du baptême du Saint-Esprit et de son importance pour le croyant.',
+      videoUrl: '',
+      date: '2026-08-15'
+    }
+  ],
+  audios: [
+    {
+      id: 1,
+      temple: 'rocher',
+      titre: 'Culte du dimanche — Louange et adoration',
+      description: 'Enregistrement du temps de louange et d\'adoration du culte dominical.',
+      audioUrl: '',
+      date: '2026-09-07'
+    }
+  ],
   temples: {
     rocher: {
       id: 'rocher',
@@ -227,6 +247,8 @@ const DB = {
       if (raw) {
         const parsed = JSON.parse(raw);
         if (!parsed.temples) parsed.temples = JSON.parse(JSON.stringify(INITIAL_DATA.temples));
+        if (!parsed.podcasts) parsed.podcasts = [];
+        if (!parsed.audios) parsed.audios = [];
         return parsed;
       }
     } catch(e) {}
@@ -365,6 +387,64 @@ const DB = {
       return true;
     }
     return false;
+  },
+
+  // ── Podcasts (épisodes numérotés) ──────────────────────────────
+  getPodcasts() {
+    const data = this._get();
+    return (data.podcasts || []).slice().sort((a,b) => (b.numero||0) - (a.numero||0));
+  },
+
+  addPodcast(p) {
+    const data = this._get();
+    if (!data.podcasts) data.podcasts = [];
+    data.podcasts.push({ id: Date.now(), ...p });
+    this._save(data);
+  },
+
+  updatePodcast(id, updates) {
+    const data = this._get();
+    const idx = (data.podcasts||[]).findIndex(p => p.id === id);
+    if (idx !== -1) {
+      data.podcasts[idx] = { ...data.podcasts[idx], ...updates };
+      this._save(data);
+    }
+  },
+
+  deletePodcast(id) {
+    const data = this._get();
+    data.podcasts = (data.podcasts||[]).filter(p => p.id !== id);
+    this._save(data);
+  },
+
+  // ── Audios (enregistrements ponctuels) ─────────────────────────
+  getAudios(temple = null) {
+    const data = this._get();
+    const audios = (data.audios || []).slice().sort((a,b) => new Date(b.date) - new Date(a.date));
+    if (temple && temple !== 'all') return audios.filter(a => a.temple === temple);
+    return audios;
+  },
+
+  addAudio(a) {
+    const data = this._get();
+    if (!data.audios) data.audios = [];
+    data.audios.push({ id: Date.now(), ...a });
+    this._save(data);
+  },
+
+  updateAudio(id, updates) {
+    const data = this._get();
+    const idx = (data.audios||[]).findIndex(a => a.id === id);
+    if (idx !== -1) {
+      data.audios[idx] = { ...data.audios[idx], ...updates };
+      this._save(data);
+    }
+  },
+
+  deleteAudio(id) {
+    const data = this._get();
+    data.audios = (data.audios||[]).filter(a => a.id !== id);
+    this._save(data);
   },
 
   // ── Reset ────────────────────────────────────────────────────
