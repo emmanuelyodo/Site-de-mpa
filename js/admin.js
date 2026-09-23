@@ -59,6 +59,7 @@ const Admin = {
     const livres = DB.getLivres();
     const podcasts = DB.getPodcasts().sort((a,b) => (a.numero||0)-(b.numero||0));
     const audios = DB.getAudios().sort((a,b) => new Date(b.date)-new Date(a.date));
+    const social = DB.getSocial();
 
     return `
       <div class="admin-panel">
@@ -109,14 +110,19 @@ const Admin = {
             <button class="admin-tab" onclick="Admin.switchTab('livres',this)">📚 Livres (${livres.length})</button>
             <button class="admin-tab" onclick="Admin.switchTab('podcasts',this)">🎬 Podcasts (${podcasts.length})</button>
             <button class="admin-tab" onclick="Admin.switchTab('audios',this)">🔊 Audios (${audios.length})</button>
+            <button class="admin-tab" onclick="Admin.switchTab('social',this)">🌐 Réseaux sociaux</button>
             <button class="admin-tab" onclick="Admin.switchTab('temples',this)">🏛 Temples & Contacts (2)</button>
+            <button class="admin-tab" onclick="Admin.switchTab('social',this)">🌐 Réseaux sociaux</button>
           </div>
 
           <!-- TAB MESSAGES -->
           <div id="tab-messages" class="admin-tab-content">
-            <div style="display:flex;justify-content:flex-end;margin-bottom:1rem;gap:.5rem;">
-              <button class="btn btn-primary btn-sm" onclick="Admin.openMessageForm('rocher')">+ Rocher des Âges</button>
-              <button class="btn btn-sm" style="background:var(--red);color:white;" onclick="Admin.openMessageForm('ebenezer')">+ Ebenezer</button>
+            <div style="display:flex;justify-content:space-between;margin-bottom:1rem;gap:.5rem;flex-wrap:wrap;">
+              <div style="display:flex;gap:.5rem;">
+                <button class="btn btn-primary btn-sm" onclick="Admin.openMessageForm('rocher')">+ Rocher des Âges</button>
+                <button class="btn btn-sm" style="background:var(--red);color:white;" onclick="Admin.openMessageForm('ebenezer')">+ Ebenezer</button>
+              </div>
+              ${messages.length > 0 ? `<button class="btn btn-outline btn-sm" style="color:#b33;border-color:#b33;" onclick="Admin.deleteAllOfType('messages','messages')">🗑 Tout supprimer</button>` : ''}
             </div>
             ${messages.length > 0 ? `
             <div class="admin-table-wrap">
@@ -153,8 +159,9 @@ const Admin = {
 
           <!-- TAB AFFICHES -->
           <div id="tab-affiches" class="admin-tab-content hidden">
-            <div style="display:flex;justify-content:flex-end;margin-bottom:1rem;">
+            <div style="display:flex;justify-content:space-between;margin-bottom:1rem;">
               <button class="btn btn-primary btn-sm" onclick="Admin.openAfficheForm()">+ Nouvelle affiche</button>
+              ${affiches.length > 0 ? `<button class="btn btn-outline btn-sm" style="color:#b33;border-color:#b33;" onclick="Admin.deleteAllOfType('affiches','affiches')">🗑 Tout supprimer</button>` : ''}
             </div>
             ${affiches.length > 0 ? `
             <div class="admin-table-wrap">
@@ -184,8 +191,9 @@ const Admin = {
 
           <!-- TAB LIVRES -->
           <div id="tab-livres" class="admin-tab-content hidden">
-            <div style="display:flex;justify-content:flex-end;margin-bottom:1rem;">
+            <div style="display:flex;justify-content:space-between;margin-bottom:1rem;">
               <button class="btn btn-primary btn-sm" onclick="Admin.openLivreForm()">+ Nouveau livre</button>
+              ${livres.length > 0 ? `<button class="btn btn-outline btn-sm" style="color:#b33;border-color:#b33;" onclick="Admin.deleteAllOfType('livres','livres')">🗑 Tout supprimer</button>` : ''}
             </div>
             ${livres.length > 0 ? `
             <div class="admin-table-wrap">
@@ -215,8 +223,9 @@ const Admin = {
 
           <!-- TAB PODCASTS -->
           <div id="tab-podcasts" class="admin-tab-content hidden">
-            <div style="display:flex;justify-content:flex-end;margin-bottom:1rem;">
+            <div style="display:flex;justify-content:space-between;margin-bottom:1rem;">
               <button class="btn btn-primary btn-sm" onclick="Admin.openPodcastForm()">+ Nouvel épisode</button>
+              ${podcasts.length > 0 ? `<button class="btn btn-outline btn-sm" style="color:#b33;border-color:#b33;" onclick="Admin.deleteAllOfType('podcasts','podcasts')">🗑 Tout supprimer</button>` : ''}
             </div>
             ${podcasts.length > 0 ? `
             <div class="admin-table-wrap">
@@ -246,8 +255,9 @@ const Admin = {
 
           <!-- TAB AUDIOS -->
           <div id="tab-audios" class="admin-tab-content hidden">
-            <div style="display:flex;justify-content:flex-end;margin-bottom:1rem;">
+            <div style="display:flex;justify-content:space-between;margin-bottom:1rem;">
               <button class="btn btn-primary btn-sm" onclick="Admin.openAudioForm()">+ Nouvel audio</button>
+              ${audios.length > 0 ? `<button class="btn btn-outline btn-sm" style="color:#b33;border-color:#b33;" onclick="Admin.deleteAllOfType('audios','audios')">🗑 Tout supprimer</button>` : ''}
             </div>
             ${audios.length > 0 ? `
             <div class="admin-table-wrap">
@@ -307,6 +317,21 @@ const Admin = {
             </div>
           </div>
 
+          <!-- TAB RÉSEAUX SOCIAUX -->
+          <div id="tab-social" class="admin-tab-content hidden">
+            <div class="admin-table-wrap" style="padding:1.5rem;max-width:500px;">
+              <div class="form-group">
+                <label class="form-label" for="socialFacebook">📘 Lien de la page Facebook</label>
+                <input type="text" id="socialFacebook" class="form-control" placeholder="https://facebook.com/votrepage" value="${escapeHtml(social.facebook||'')}">
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="socialYoutube">▶ Lien de la chaîne YouTube</label>
+                <input type="text" id="socialYoutube" class="form-control" placeholder="https://youtube.com/@votrechaine" value="${escapeHtml(social.youtube||'')}">
+              </div>
+              <button class="btn btn-primary btn-sm" onclick="Admin.saveSocial()">💾 Enregistrer</button>
+            </div>
+          </div>
+
         </div>
       </div>
     `;
@@ -317,6 +342,14 @@ const Admin = {
     document.querySelectorAll('.admin-tab-content').forEach(c => c.classList.add('hidden'));
     btn.classList.add('active');
     document.getElementById('tab-' + tab)?.classList.remove('hidden');
+  },
+
+  saveSocial() {
+    const facebook = document.getElementById('socialFacebook').value.trim();
+    const youtube = document.getElementById('socialYoutube').value.trim();
+    DB.updateSocial({ facebook, youtube });
+    showToast('Liens des réseaux sociaux enregistrés !', 'success');
+    if (typeof renderFooterSocial === 'function') renderFooterSocial();
   },
 
   // ── FORMULAIRE MESSAGE ───────────────────────────────────────
@@ -772,6 +805,14 @@ const Admin = {
           <textarea id="tmpDescription" class="form-control" rows="3">${escapeHtml(temple.description)}</textarea>
         </div>
         <div class="form-group">
+          <label class="form-label" for="tmpFacebook">📘 Lien Facebook de ce temple</label>
+          <input type="text" id="tmpFacebook" class="form-control" placeholder="https://facebook.com/..." value="${escapeHtml(temple.facebook||'')}">
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="tmpYoutube">▶ Lien YouTube de ce temple</label>
+          <input type="text" id="tmpYoutube" class="form-control" placeholder="https://youtube.com/@..." value="${escapeHtml(temple.youtube||'')}">
+        </div>
+        <div class="form-group">
           <label class="form-label">Photo / Logo du Temple</label>
           <div style="background:var(--bg-alt,#f8f9fa);padding:.75rem;border-radius:8px;border:1px dashed var(--border,#ddd);">
             <label style="font-size:.8rem;color:var(--navy);font-weight:600;display:block;margin-bottom:.35rem;">📁 Choisir une photo sur mon ordinateur :</label>
@@ -799,6 +840,8 @@ const Admin = {
       adresse: document.getElementById('tmpAdresse').value.trim(),
       horaires: document.getElementById('tmpHoraires').value.split('\n').filter(Boolean),
       description: document.getElementById('tmpDescription').value.trim(),
+      facebook: document.getElementById('tmpFacebook').value.trim(),
+      youtube: document.getElementById('tmpYoutube').value.trim(),
       logo: document.getElementById('tmpLogo').value.trim()
     };
     DB.updateTemple(templeId, data);
@@ -809,5 +852,13 @@ const Admin = {
 
   closeModal() {
     document.getElementById('modalOverlay')?.classList.remove('open');
+  },
+
+  deleteAllOfType(category, labelPlural) {
+    const confirmMsg = `⚠ Cette action supprimera TOUS les ${labelPlural} (définitivement, pour tous les visiteurs). Continuer ?`;
+    if (!confirm(confirmMsg)) return;
+    DB.deleteAllOfType(category);
+    showToast('Toutes les données de cette catégorie ont été supprimées.', 'info');
+    App.navigate('admin-panel');
   }
 };
