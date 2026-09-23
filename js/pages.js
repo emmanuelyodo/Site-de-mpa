@@ -41,19 +41,19 @@ const Pages = {
         <div class="stats-grid">
           <div class="stat-item">
             <div class="stat-number">2</div>
-            <div class="stat-label">Temples</div>
+            <div class="stat-label">${t('home_stat_temples')}</div>
           </div>
           <div class="stat-item">
             <div class="stat-number">${totalMessages}</div>
-            <div class="stat-label">Prédications</div>
+            <div class="stat-label">${t('home_stat_messages')}</div>
           </div>
           <div class="stat-item">
             <div class="stat-number">${totalAffiches}</div>
-            <div class="stat-label">Événements</div>
+            <div class="stat-label">${t('home_stat_affiches')}</div>
           </div>
           <div class="stat-item">
             <div class="stat-number">${totalLivres}</div>
-            <div class="stat-label">Livres</div>
+            <div class="stat-label">${t('home_stat_livres')}</div>
           </div>
         </div>
       </div>
@@ -303,6 +303,16 @@ const Pages = {
                 <a href="https://maps.google.com" target="_blank" style="color:var(--gold);text-decoration:underline;">Voir sur la carte</a>
               </div>
             </div>
+            ${(c.facebook || c.youtube) ? `
+            <div class="temple-info-card">
+              <div class="info-icon">🌐</div>
+              <div class="info-label">Réseaux sociaux</div>
+              <div class="info-value" style="display:flex;gap:.75rem;justify-content:center;">
+                ${c.facebook ? `<a href="${escapeHtml(c.facebook)}" target="_blank" style="color:var(--gold);" aria-label="Facebook">📘 Facebook</a>` : ''}
+                ${c.youtube ? `<a href="${escapeHtml(c.youtube)}" target="_blank" style="color:var(--gold);" aria-label="YouTube">▶ YouTube</a>` : ''}
+              </div>
+            </div>
+            ` : ''}
           </div>
         </div>
       </section>
@@ -373,8 +383,8 @@ const Pages = {
       <section class="temple-page-hero">
         <div class="container">
           <div style="font-size:3rem;margin-bottom:1rem;">🎨</div>
-          <h1>Galerie d'Affiches</h1>
-          <p>Retrouvez toutes les affiches de nos événements, cultes spéciaux et conférences.</p>
+          <h1 data-i18n-inline="affiches_title">${t('affiches_title')}</h1>
+          <p>${t('affiches_subtitle')}</p>
         </div>
       </section>
       <section class="section" id="affiches-content">
@@ -392,8 +402,7 @@ const Pages = {
             ${affiches.length > 0 ? affiches.map(a => Pages.renderAfficheCard(a, false, isAdmin)).join('') : `
               <div class="empty-state" style="grid-column:1/-1">
                 <div class="empty-icon">🎨</div>
-                <h3>Aucune affiche disponible</h3>
-                <p>Les affiches seront bientôt disponibles.</p>
+                <h3>${t('affiches_empty')}</h3>
               </div>
             `}
           </div>
@@ -427,8 +436,8 @@ const Pages = {
       <section class="temple-page-hero" style="background:linear-gradient(135deg,#1a3a1a,#2d6a2d);">
         <div class="container">
           <div style="font-size:3rem;margin-bottom:1rem;">📚</div>
-          <h1>Bibliothèque MPA</h1>
-          <p>Découvrez les ouvrages spirituels publiés par les pasteurs et évangélistes de la Mission Apostolique de Pentecôte.</p>
+          <h1>${t('livres_title')}</h1>
+          <p>${t('livres_subtitle')}</p>
         </div>
       </section>
       <section class="section" id="livres-content">
@@ -444,8 +453,7 @@ const Pages = {
             ${livres.length > 0 ? livres.map(l => Pages.renderLivreCard(l, isAdmin)).join('') : `
               <div class="empty-state" style="grid-column:1/-1">
                 <div class="empty-icon">📚</div>
-                <h3>Aucun livre disponible</h3>
-                <p>Le catalogue sera bientôt disponible.</p>
+                <h3>${t('livres_empty')}</h3>
               </div>
             `}
           </div>
@@ -468,8 +476,8 @@ const Pages = {
       <section class="temple-page-hero" style="background:linear-gradient(135deg,#3a1a4a,#6a2d8b);">
         <div class="container">
           <div style="font-size:3rem;margin-bottom:1rem;">🎬</div>
-          <h1>Podcasts MPA</h1>
-          <p>Notre série vidéo d'épisodes réguliers pour approfondir votre foi, où que vous soyez.</p>
+          <h1>${t('podcasts_title')}</h1>
+          <p>${t('podcasts_subtitle')}</p>
         </div>
       </section>
       <section class="section" id="podcasts-content">
@@ -485,8 +493,7 @@ const Pages = {
             ${podcasts.length > 0 ? podcasts.map(p => Pages.renderPodcastCard(p, isAdmin)).join('') : `
               <div class="empty-state" style="grid-column:1/-1">
                 <div class="empty-icon">🎬</div>
-                <h3>Aucun épisode pour l'instant</h3>
-                <p>Le premier épisode sera bientôt disponible.</p>
+                <h3>${t('podcasts_empty')}</h3>
               </div>
             `}
           </div>
@@ -509,8 +516,8 @@ const Pages = {
       <section class="temple-page-hero" style="background:linear-gradient(135deg,#1a2a4a,#2d5a8b);">
         <div class="container">
           <div style="font-size:3rem;margin-bottom:1rem;">🔊</div>
-          <h1>Enregistrements Audio</h1>
-          <p>Retrouvez les enregistrements de nos cultes, temps de louange et moments forts.</p>
+          <h1>${t('audios_title')}</h1>
+          <p>${t('audios_subtitle')}</p>
         </div>
       </section>
       <section class="section" id="audios-content">
@@ -527,8 +534,7 @@ const Pages = {
             ${audios.length > 0 ? audios.map(a => Pages.renderAudioCard(a, isAdmin)).join('') : `
               <div class="empty-state">
                 <div class="empty-icon">🔊</div>
-                <h3>Aucun enregistrement disponible</h3>
-                <p>Les enregistrements seront bientôt disponibles.</p>
+                <h3>${t('audios_empty')}</h3>
               </div>
             `}
           </div>
@@ -546,6 +552,116 @@ const Pages = {
     list.innerHTML = audios.length > 0
       ? audios.map(a => Pages.renderAudioCard(a, App.isAdmin)).join('')
       : `<div class="empty-state"><div class="empty-icon">🔊</div><h3>Aucun enregistrement pour ce filtre</h3></div>`;
+  },
+
+  // ── PAGE BIBLE (bilingue FR/EN) ──────────────────────────────
+  renderBible() {
+    const savedBook = localStorage.getItem('mpa_bible_book') || 'John';
+    const savedChap = parseInt(localStorage.getItem('mpa_bible_chapter') || '1', 10);
+
+    const bookOptions = BIBLE_BOOKS.map(b =>
+      `<option value="${b.osis}" ${b.osis === savedBook ? 'selected' : ''}>${LANG === 'en' ? b.en : b.fr}</option>`
+    ).join('');
+
+    return `
+      <div class="breadcrumb">
+        <a href="#" onclick="App.navigate('accueil');return false;">🏠 ${LANG === 'en' ? 'Home' : 'Accueil'}</a>
+        <span class="sep">›</span>
+        <span class="current">${t('bible_title')}</span>
+      </div>
+      <section class="temple-page-hero" style="background:linear-gradient(135deg,#4a1a1a,#8b2d2d);">
+        <div class="container">
+          <div style="font-size:3rem;margin-bottom:1rem;">📖</div>
+          <h1>${t('bible_title')}</h1>
+          <p>${t('bible_subtitle')}</p>
+        </div>
+      </section>
+      <section class="section" id="bible-content">
+        <div class="container" style="max-width:800px;">
+          <div style="display:flex;gap:1rem;flex-wrap:wrap;margin-bottom:1.5rem;">
+            <div class="form-group" style="flex:2;min-width:180px;margin:0;">
+              <label class="form-label">${t('bible_book')}</label>
+              <select id="bibleBookSelect" class="form-control" onchange="Pages.loadBibleChapter(this.value, 1)">
+                ${bookOptions}
+              </select>
+            </div>
+            <div class="form-group" style="flex:1;min-width:100px;margin:0;">
+              <label class="form-label">${t('bible_chapter')}</label>
+              <select id="bibleChapterSelect" class="form-control" onchange="Pages.loadBibleChapter(document.getElementById('bibleBookSelect').value, this.value)">
+                <option>${savedChap}</option>
+              </select>
+            </div>
+          </div>
+          <div id="bibleChapterView" style="min-height:300px;">
+            <div style="text-align:center;padding:3rem 0;color:var(--text-muted);">
+              <div style="font-size:2rem;margin-bottom:1rem;">📖</div>
+              ${t('bible_loading')}
+            </div>
+          </div>
+          <div style="display:flex;justify-content:space-between;margin-top:1.5rem;">
+            <button class="btn btn-outline btn-sm" onclick="Pages.shiftBibleChapter(-1)">${t('bible_prev')}</button>
+            <button class="btn btn-outline btn-sm" onclick="Pages.shiftBibleChapter(1)">${t('bible_next')}</button>
+          </div>
+        </div>
+      </section>
+    `;
+  },
+
+  initBible() {
+    const book = localStorage.getItem('mpa_bible_book') || 'John';
+    const chap = parseInt(localStorage.getItem('mpa_bible_chapter') || '1', 10);
+    Pages.loadBibleChapter(book, chap);
+  },
+
+  async loadBibleChapter(osis, chapterNum) {
+    chapterNum = parseInt(chapterNum, 10) || 1;
+    localStorage.setItem('mpa_bible_book', osis);
+    localStorage.setItem('mpa_bible_chapter', chapterNum);
+
+    const view = document.getElementById('bibleChapterView');
+    if (view) view.innerHTML = `<div style="text-align:center;padding:3rem 0;color:var(--text-muted);">${t('bible_loading')}</div>`;
+
+    try {
+      const book = await fetchBibleBook(osis);
+      const chapters = book.chapters || [];
+      const chapIndex = Math.min(Math.max(chapterNum, 1), chapters.length) - 1;
+      const chapter = chapters[chapIndex];
+
+      // Met à jour le sélecteur de chapitres selon le nombre réel de chapitres du livre
+      const chapSelect = document.getElementById('bibleChapterSelect');
+      if (chapSelect) {
+        chapSelect.innerHTML = chapters.map((c, i) =>
+          `<option value="${i+1}" ${i === chapIndex ? 'selected' : ''}>${i+1}</option>`
+        ).join('');
+      }
+
+      const bookMeta = BIBLE_BOOKS.find(b => b.osis === osis);
+      const bookLabel = bookMeta ? (LANG === 'en' ? bookMeta.en : bookMeta.fr) : osis;
+
+      if (view) {
+        view.innerHTML = `
+          <h2 style="margin-bottom:1rem;">${bookLabel} ${chapIndex + 1}</h2>
+          <div class="bible-verses">
+            ${(chapter.verses || []).map(v => `<p style="margin-bottom:.6rem;line-height:1.7;"><sup style="color:var(--gold);font-weight:600;margin-right:.3rem;">${v.number}</sup>${escapeHtml(v.text)}</p>`).join('')}
+          </div>
+        `;
+      }
+    } catch (e) {
+      console.error(e);
+      if (view) view.innerHTML = `<div class="empty-state"><div class="empty-icon">⚠</div><h3>${t('bible_error')}</h3></div>`;
+    }
+  },
+
+  shiftBibleChapter(delta) {
+    const chapSelect = document.getElementById('bibleChapterSelect');
+    const bookSelect = document.getElementById('bibleBookSelect');
+    if (!chapSelect || !bookSelect) return;
+    const current = parseInt(chapSelect.value, 10) || 1;
+    const max = chapSelect.options.length;
+    let next = current + delta;
+    if (next < 1) next = 1;
+    if (next > max) next = max;
+    Pages.loadBibleChapter(bookSelect.value, next);
   },
 
   // ── COMPOSANTS ──────────────────────────────────────────────
@@ -633,7 +749,7 @@ const Pages = {
   },
 
   renderPodcastCard(p, isAdmin = false) {
-    const videoHtml = p.videoUrl ? Pages.renderVideoEmbed(p.videoUrl) : `<p style="font-size:.85rem;color:var(--text-muted);">Vidéo à venir.</p>`;
+    const videoHtml = p.videoUrl ? Pages.renderVideoEmbed(p.videoUrl) : `<p style="font-size:.85rem;color:var(--text-muted);">${t('podcasts_coming')}</p>`;
     const adminBtns = isAdmin ? `
       <div class="action-btns mt-1">
         <button class="btn-edit" onclick="Admin.openPodcastForm(${p.id})">✏ Modifier</button>
@@ -677,7 +793,7 @@ const Pages = {
     if (/\.(mp4|webm|ogg)(\?.*)?$/i.test(url)) {
       return `<div class="video-embed-wrap"><video controls preload="none" src="${safeUrl}"></video></div>`;
     }
-    return `<a href="${safeUrl}" target="_blank" class="video-link">▶ Regarder l'épisode</a>`;
+    return `<a href="${safeUrl}" target="_blank" class="video-link">${t('podcasts_watch')}</a>`;
   },
 
   renderAudioCard(a, isAdmin = false) {
@@ -686,7 +802,7 @@ const Pages = {
         <audio controls preload="none">
           <source src="${escapeHtml(a.audioUrl)}" type="audio/mpeg">
         </audio>
-      </div>` : `<p style="font-size:.85rem;color:var(--text-muted);">Audio à venir.</p>`;
+      </div>` : `<p style="font-size:.85rem;color:var(--text-muted);">${t('audios_coming')}</p>`;
     const adminBtns = isAdmin ? `
       <div class="action-btns mt-2">
         <button class="btn-edit" onclick="Admin.openAudioForm(${a.id})">✏ Modifier</button>
