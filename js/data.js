@@ -14,6 +14,10 @@ const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
 
 // ── Données initiales (démo) ─────────────────────────────────
 const INITIAL_DATA = {
+  social: {
+    facebook: '',
+    youtube: ''
+  },
   messages: [
     {
       id: 1,
@@ -209,6 +213,10 @@ const INITIAL_DATA = {
       date: '2026-09-07'
     }
   ],
+  social: {
+    facebook: '',
+    youtube: ''
+  },
   temples: {
     rocher: {
       id: 'rocher',
@@ -221,6 +229,8 @@ const INITIAL_DATA = {
       adresse: 'Lomé, Togo — Quartier à préciser',
       horaires: ['Dimanche : 8h00 | 10h00 | 18h00', 'Mercredi (prière) : 18h30', 'Vendredi (jeunesse) : 18h00'],
       tel: '+228 XX XX XX XX',
+      facebook: '',
+      youtube: '',
       description: 'Le Temple du Rocher des Âges est le temple fondateur de la Mission Apostolique de Pentecôte au Togo. Fondé sur la Roche éternelle qu’est Jésus-Christ, ce lieu de culte accueille chaque semaine des centaines de fidèles avides de la Parole de Dieu et de la présence du Saint-Esprit.'
     },
     ebenezer: {
@@ -234,6 +244,8 @@ const INITIAL_DATA = {
       adresse: 'Lomé, Togo — Quartier à préciser',
       horaires: ['Dimanche : 8h00 | 10h30 | 17h00', 'Mardi (prière) : 18h00', 'Jeudi (culte semaine) : 18h30'],
       tel: '+228 XX XX XX XX',
+      facebook: '',
+      youtube: '',
       description: 'Le Temple Ebenezer porte le nom de l’autel que Samuel érigea en disant : « Jusqu’ici l’Éternel nous a secourus » (1 Samuel 7:12). Ce temple est un lieu de reconnaissance, de prière fervente et d’adoration sincère. La communauté Ebenezer est connue pour sa chaleur fraternelle et sa ferveur spirituelle.'
     }
   }
@@ -373,6 +385,19 @@ const DB = {
     return data.temples;
   },
 
+  // ── Réseaux sociaux (liens globaux, affichés dans le pied de page) ──
+  getSocial() {
+    const data = this._get();
+    return data.social || { facebook: '', youtube: '' };
+  },
+
+  updateSocial(updates) {
+    const data = this._get();
+    data.social = { ...(data.social || { facebook: '', youtube: '' }), ...updates };
+    this._save(data);
+    return true;
+  },
+
   getTemple(id) {
     const temples = this.getTemples();
     return temples[id] || temples.rocher;
@@ -445,6 +470,18 @@ const DB = {
     const data = this._get();
     data.audios = (data.audios||[]).filter(a => a.id !== id);
     this._save(data);
+  },
+
+  // ── Suppression en masse (nettoyage des anciennes données) ────
+  // category : 'messages' | 'affiches' | 'livres' | 'podcasts' | 'audios'
+  deleteAllOfType(category) {
+    const data = this._get();
+    if (Array.isArray(data[category])) {
+      data[category] = [];
+      this._save(data);
+      return true;
+    }
+    return false;
   },
 
   // ── Reset ────────────────────────────────────────────────────
