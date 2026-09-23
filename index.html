@@ -39,45 +39,54 @@
       <a href="#accueil" class="navbar-brand" onclick="App.navigate('accueil');return false;">
         <img src="logo.jpg" alt="Logo Mission Apostolique de Pentecôte" width="46" height="46">
         <div class="navbar-brand-text">
-          <div class="brand-name">Mission Apostolique</div>
-          <div class="brand-abbr">de Pentecôte — M.P.A.</div>
+          <div class="brand-name" data-i18n="brand_line1">Mission Apostolique</div>
+          <div class="brand-abbr" data-i18n="brand_line2">de Pentecôte — M.P.A.</div>
         </div>
       </a>
 
       <!-- Menu Desktop -->
       <ul class="navbar-menu" id="navMenu" role="menubar">
         <li role="none">
-          <a href="#accueil" class="nav-link" data-page="accueil" role="menuitem"
+          <a href="#accueil" class="nav-link" data-page="accueil" data-i18n="nav_accueil" role="menuitem"
              onclick="App.navigate('accueil');return false;">🏠 Accueil</a>
         </li>
         <li role="none">
-          <a href="#rocher" class="nav-link" data-page="rocher" role="menuitem"
+          <a href="#rocher" class="nav-link" data-page="rocher" data-i18n="nav_rocher" role="menuitem"
              onclick="App.navigate('rocher');return false;">🏛 Rocher des Âges</a>
         </li>
         <li role="none">
-          <a href="#ebenezer" class="nav-link" data-page="ebenezer" role="menuitem"
+          <a href="#ebenezer" class="nav-link" data-page="ebenezer" data-i18n="nav_ebenezer" role="menuitem"
              onclick="App.navigate('ebenezer');return false;">⛪ Ebenezer</a>
         </li>
         <li role="none">
-          <a href="#affiches" class="nav-link" data-page="affiches" role="menuitem"
+          <a href="#affiches" class="nav-link" data-page="affiches" data-i18n="nav_affiches" role="menuitem"
              onclick="App.navigate('affiches');return false;">🎨 Affiches</a>
         </li>
         <li role="none">
-          <a href="#livres" class="nav-link" data-page="livres" role="menuitem"
+          <a href="#livres" class="nav-link" data-page="livres" data-i18n="nav_livres" role="menuitem"
              onclick="App.navigate('livres');return false;">📚 Livres</a>
         </li>
         <li role="none">
-          <a href="#podcasts" class="nav-link" data-page="podcasts" role="menuitem"
+          <a href="#podcasts" class="nav-link" data-page="podcasts" data-i18n="nav_podcasts" role="menuitem"
              onclick="App.navigate('podcasts');return false;">🎬 Podcasts</a>
         </li>
         <li role="none">
-          <a href="#audios" class="nav-link" data-page="audios" role="menuitem"
+          <a href="#audios" class="nav-link" data-page="audios" data-i18n="nav_audios" role="menuitem"
              onclick="App.navigate('audios');return false;">🔊 Audios</a>
+        </li>
+        <li role="none">
+          <a href="#bible" class="nav-link" data-page="bible" data-i18n="nav_bible" role="menuitem"
+             onclick="App.navigate('bible');return false;">📖 Bible</a>
         </li>
       </ul>
 
-      <!-- Bouton Admin + Hamburger -->
+      <!-- Bouton Langue + Admin + Hamburger -->
       <div style="display:flex;align-items:center;gap:.75rem;">
+        <button class="nav-admin-btn" id="langToggleBtn"
+                onclick="setLanguage(LANG === 'fr' ? 'en' : 'fr')"
+                aria-label="Changer de langue / Switch language">
+          🌐 EN
+        </button>
         <button class="nav-admin-btn" id="navAdminBtn"
                 onclick="App.navigate(App.isAdmin ? 'admin-panel' : 'admin')"
                 aria-label="Administration">
@@ -114,12 +123,12 @@
         <img src="logo.jpg" alt="Logo MPA" width="40" height="40">
         <span>Mission Apostolique de Pentecôte</span>
       </div>
-      <div class="footer-social" id="footerSocial"></div>
       <p class="footer-text">
         © <span id="year"></span> Mission Apostolique de Pentecôte — Togo &nbsp;|&nbsp;
-        Fondée sur la Parole de Dieu &nbsp;|&nbsp; Psaumes 18 : 1-2
+        <span data-i18n="footer_text">Fondée sur la Parole de Dieu | Psaumes 18 : 1-2</span>
       </p>
-      <a href="#" class="footer-admin-link" onclick="App.navigate(App.isAdmin?'admin-panel':'admin');return false;">
+      <div id="footerSocial" style="display:flex;gap:1rem;justify-content:center;margin:.75rem 0;"></div>
+      <a href="#" class="footer-admin-link" onclick="App.navigate(App.isAdmin?'admin-panel':'admin');return false;" data-i18n="footer_admin">
         ⚙ Espace Administration
       </a>
     </div>
@@ -178,12 +187,16 @@
        SCRIPTS
   ════════════════════════════════════════ -->
   <script src="js/data.js"></script>
+  <script src="js/lang.js"></script>
   <script src="js/pages.js"></script>
   <script src="js/admin.js"></script>
   <script src="js/app.js"></script>
   <script>
     // Année dynamique
     document.getElementById('year').textContent = new Date().getFullYear();
+
+    // Appliquer la langue enregistrée (barre de navigation, pied de page)
+    if (typeof applyStaticTranslations === 'function') applyStaticTranslations();
 
     // Afficher le body après chargement
     document.body.classList.add('loaded');
