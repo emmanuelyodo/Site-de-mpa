@@ -29,6 +29,9 @@ const App = {
       menu.classList.toggle('open');
     });
 
+    // Icônes réseaux sociaux (pied de page)
+    this.renderFooterSocial();
+
     // Fermer menu mobile au clic lien
     document.querySelectorAll('.nav-link').forEach(link => {
       link.addEventListener('click', () => {
@@ -108,6 +111,9 @@ const App = {
       case 'audios':
         html = Pages.renderAudios();
         break;
+      case 'bible':
+        html = Pages.renderBible();
+        break;
       case 'admin':
         if (this.isAdmin) {
           this.navigate('admin-panel', pushHash);
@@ -129,6 +135,11 @@ const App = {
 
     main.innerHTML = `<div class="page-transition">${html}</div>`;
 
+    // Charge le premier chapitre biblique après insertion du DOM
+    if (page === 'bible' && typeof Pages.initBible === 'function') {
+      Pages.initBible();
+    }
+
     // Scroll en haut (sauf page d'accueil pour garder l'animation)
     if (page !== 'accueil') {
       window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -149,6 +160,20 @@ const App = {
     }, { threshold: 0.1 });
 
     document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+  },
+
+  renderFooterSocial() {
+    const el = document.getElementById('footerSocial');
+    if (!el) return;
+    const social = DB.getSocial();
+    let html = '';
+    if (social.facebook) {
+      html += `<a href="${social.facebook}" target="_blank" rel="noopener" aria-label="Facebook" style="font-size:1.5rem;color:inherit;text-decoration:none;">📘</a>`;
+    }
+    if (social.youtube) {
+      html += `<a href="${social.youtube}" target="_blank" rel="noopener" aria-label="YouTube" style="font-size:1.5rem;color:inherit;text-decoration:none;">▶️</a>`;
+    }
+    el.innerHTML = html;
   }
 };
 
