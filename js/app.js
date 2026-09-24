@@ -27,6 +27,14 @@ const App = {
     document.getElementById('hamburger')?.addEventListener('click', () => {
       const menu = document.getElementById('navMenu');
       menu.classList.toggle('open');
+      // Force le navigateur à recalculer l'affichage (corrige un bug connu
+      // de Safari/iOS où les éléments en position fixe n'apparaissent pas
+      // tant qu'un défilement/recalcul n'a pas eu lieu).
+      if (menu.classList.contains('open')) {
+        void menu.offsetHeight;
+        window.scrollBy(0, 1);
+        window.scrollBy(0, -1);
+      }
     });
 
     // Icônes réseaux sociaux (pied de page)
