@@ -18,20 +18,20 @@ const Pages = {
       <section id="hero">
         <div class="hero-content">
           <img src="logo.jpg" alt="Logo MPA" class="hero-logo">
-          <p class="hero-tagline">Bienvenue à la</p>
-          <h1>Mission Apostolique<br>de Pentecôte</h1>
+          <p class="hero-tagline">${t('hero_welcome')}</p>
+          <h1>${LANG === 'en' ? 'Apostolic Mission<br>of Pentecost' : 'Mission Apostolique<br>de Pentecôte'}</h1>
           <div class="hero-verse">
-            « Je t'aime, ô Éternel, ma force ! L'Éternel est mon rocher, ma forteresse et mon libérateur ; mon Dieu, mon rocher où je me réfugie, mon bouclier, la force qui me sauve, ma haute retraite. »
-            <cite>Psaumes 18 : 1-2</cite>
+            ${t('hero_verse')}
+            <cite>${t('hero_verse_cite')}</cite>
           </div>
           <div class="hero-actions">
-            <button class="btn btn-primary" onclick="App.navigate('rocher')">🏛 Temple Rocher des Âges</button>
-            <button class="btn btn-ghost" onclick="App.navigate('ebenezer')">⛪ Temple Ebenezer</button>
-            <button class="btn btn-gold" onclick="document.getElementById('contact-section').scrollIntoView({behavior:'smooth'})">📞 Nous contacter</button>
+            <button class="btn btn-primary" onclick="App.navigate('rocher')">${t('hero_btn_rocher')}</button>
+            <button class="btn btn-ghost" onclick="App.navigate('ebenezer')">${t('hero_btn_ebenezer')}</button>
+            <button class="btn btn-gold" onclick="document.getElementById('contact-section').scrollIntoView({behavior:'smooth'})">${t('hero_btn_contact')}</button>
           </div>
         </div>
         <div class="hero-scroll">
-          <span>Défiler</span>
+          <span>${t('hero_scroll')}</span>
           <div class="scroll-arrow"></div>
         </div>
       </section>
@@ -62,35 +62,33 @@ const Pages = {
       <section class="section" id="presentation">
         <div class="container">
           <div class="section-header text-center fade-in">
-            <span class="section-tag">Notre Mission</span>
-            <h2>Une Église ancrée dans la Foi</h2>
+            <span class="section-tag">${t('mission_tag')}</span>
+            <h2>${t('mission_title')}</h2>
             <div class="section-divider"></div>
             <p class="lead mt-2" style="max-width:660px;margin:0 auto;">
-              La Mission Apostolique de Pentecôte (MPA) est une église chrétienne évangélique implantée au Togo,
-              fondée sur la Parole de Dieu et animée par le Saint-Esprit. Notre vocation : annoncer l'Évangile
-              de Jésus-Christ et former des disciples.
+              ${t('mission_lead')}
             </p>
           </div>
           <div class="mission-grid mt-4">
             <div class="mission-card fade-in">
               <div class="mission-icon">📖</div>
-              <h4>La Parole</h4>
-              <p>Fondés sur la Bible, la Parole infaillible de Dieu, nous enseignons avec fidélité la vérité scripturaire.</p>
+              <h4>${t('mission_word_title')}</h4>
+              <p>${t('mission_word_text')}</p>
             </div>
             <div class="mission-card fade-in">
               <div class="mission-icon">🕊️</div>
-              <h4>Le Saint-Esprit</h4>
-              <p>Nous croyons aux dons du Saint-Esprit et à son œuvre puissante dans la vie de chaque croyant.</p>
+              <h4>${t('mission_spirit_title')}</h4>
+              <p>${t('mission_spirit_text')}</p>
             </div>
             <div class="mission-card fade-in">
               <div class="mission-icon">🌍</div>
-              <h4>La Mission</h4>
-              <p>Évangéliser les nations et implanter des églises selon le commandement du Seigneur Jésus-Christ.</p>
+              <h4>${t('mission_mission_title')}</h4>
+              <p>${t('mission_mission_text')}</p>
             </div>
             <div class="mission-card fade-in">
               <div class="mission-icon">🤝</div>
-              <h4>La Communauté</h4>
-              <p>Vivre en fraternité, se soutenir mutuellement et croître ensemble dans la foi et l'amour.</p>
+              <h4>${t('mission_community_title')}</h4>
+              <p>${t('mission_community_text')}</p>
             </div>
           </div>
         </div>
@@ -100,8 +98,8 @@ const Pages = {
       <section class="section section-alt" id="temples-section">
         <div class="container">
           <div class="section-header text-center fade-in">
-            <span class="section-tag">Nos Lieux de Culte</span>
-            <h2>Deux Temples, Une Foi</h2>
+            <span class="section-tag">${t('temples_tag')}</span>
+            <h2>${t('temples_title')}</h2>
             <div class="section-divider"></div>
           </div>
           <div class="temples-grid mt-4">
@@ -110,8 +108,8 @@ const Pages = {
                 <span class="temple-emoji">🏛</span>
               </div>
               <div class="temple-card-body">
-                <h3>Temple du Rocher des Âges</h3>
-                <p>Notre premier temple, pilier de la MPA au Togo. Un lieu de rencontre avec Dieu où des centaines de fidèles se réunissent chaque semaine.</p>
+                <h3>${t('temple_rocher_name')}</h3>
+                <p>${t('temple_rocher_desc')}</p>
                 <div class="temple-meta">
                   <div class="temple-meta-item">
                     <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>
@@ -123,7 +121,7 @@ const Pages = {
                   </div>
                 </div>
                 <button class="btn btn-primary" onclick="App.navigate('rocher')">
-                  Découvrir ce temple →
+                  ${t('temple_discover_btn')}
                 </button>
               </div>
             </div>
@@ -132,8 +130,8 @@ const Pages = {
                 <span class="temple-emoji">⛪</span>
               </div>
               <div class="temple-card-body">
-                <h3>Temple Ebenezer</h3>
-                <p>Notre second temple, portant le nom de l'autel de la gratitude. Un espace de prière, de louange et d'enseignement de la Parole.</p>
+                <h3>${t('temple_ebenezer_name')}</h3>
+                <p>${t('temple_ebenezer_desc')}</p>
                 <div class="temple-meta">
                   <div class="temple-meta-item">
                     <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>
@@ -145,7 +143,7 @@ const Pages = {
                   </div>
                 </div>
                 <button class="btn btn-primary" style="background:var(--red)" onclick="App.navigate('ebenezer')">
-                  Découvrir ce temple →
+                  ${t('temple_discover_btn')}
                 </button>
               </div>
             </div>
@@ -157,8 +155,8 @@ const Pages = {
       <section class="section" id="derniers-messages">
         <div class="container">
           <div class="section-header fade-in">
-            <span class="section-tag">Prédications Récentes</span>
-            <h2>Derniers Messages</h2>
+            <span class="section-tag">${t('latest_tag')}</span>
+            <h2>${t('home_latest_title')}</h2>
             <div class="section-divider left"></div>
           </div>
           <div class="messages-grid mt-4">
@@ -181,15 +179,15 @@ const Pages = {
       <section class="section section-alt" id="dernières-affiches">
         <div class="container">
           <div class="section-header fade-in">
-            <span class="section-tag">Événements à venir</span>
-            <h2>Dernières Affiches</h2>
+            <span class="section-tag">${t('affiches_upcoming_tag')}</span>
+            <h2>${t('affiches_latest_title')}</h2>
             <div class="section-divider left"></div>
           </div>
           <div class="affiches-grid mt-4">
             ${latestAffiches.map(a => Pages.renderAfficheCard(a, true)).join('')}
           </div>
           <div class="text-center mt-4">
-            <button class="btn btn-outline" onclick="App.navigate('affiches')">Voir toutes les affiches →</button>
+            <button class="btn btn-outline" onclick="App.navigate('affiches')">${t('affiches_see_all')}</button>
           </div>
         </div>
       </section>
@@ -198,17 +196,17 @@ const Pages = {
       <!-- APPEL À L'ACTION -->
       <div class="cta-section">
         <div class="container">
-          <h2>Rejoignez notre communauté</h2>
-          <p>Que vous soyez croyant depuis longtemps ou en chemin vers la foi, la MPA vous accueille avec joie. Venez tel que vous êtes !</p>
+          <h2>${t('cta_title')}</h2>
+          <p>${t('cta_text')}</p>
           <div class="cta-actions">
             <button class="btn btn-white" onclick="document.getElementById('contact-section').scrollIntoView({behavior:'smooth'})">
-              📞 Nous contacter
+              ${t('hero_btn_contact')}
             </button>
             <button class="btn btn-ghost" onclick="App.navigate('rocher')">
-              🏛 Rocher des Âges
+              ${t('hero_btn_rocher')}
             </button>
             <button class="btn btn-ghost" onclick="App.navigate('ebenezer')">
-              ⛪ Temple Ebenezer
+              ${t('hero_btn_ebenezer')}
             </button>
           </div>
         </div>
@@ -218,15 +216,18 @@ const Pages = {
       <section class="section" id="contact-section">
         <div class="container">
           <div class="section-header text-center fade-in">
-            <span class="section-tag">Contact</span>
-            <h2>Nous Rejoindre</h2>
+            <span class="section-tag">${t('contact_tag')}</span>
+            <h2>${t('contact_title')}</h2>
             <div class="section-divider"></div>
           </div>
           <div class="contact-grid mt-4">
             ${(() => {
-              const t = DB.getTemples();
-              const rocher = t.rocher || {};
-              const ebenezer = t.ebenezer || {};
+              const temples = DB.getTemples();
+              const rocher = temples.rocher || {};
+              const ebenezer = temples.ebenezer || {};
+              const social = DB.getSocial();
+              const fb = rocher.facebook || ebenezer.facebook || social.facebook || '';
+              const yt = rocher.youtube || ebenezer.youtube || social.youtube || '';
               return `
                 <div class="contact-card fade-in">
                   <div class="contact-icon">🏛</div>
@@ -244,12 +245,11 @@ const Pages = {
                 </div>
                 <div class="contact-card fade-in">
                   <div class="contact-icon">📞</div>
-                  <h4 style="color:var(--navy);margin-bottom:.5rem;">Contacts Directs</h4>
-                  <p><strong>Rocher :</strong> ${escapeHtml(rocher.tel || 'Non renseigné')}<br><strong>Ebenezer :</strong> ${escapeHtml(ebenezer.tel || 'Non renseigné')}</p>
+                  <h4 style="color:var(--navy);margin-bottom:.5rem;">${t('contact_direct_title')}</h4>
+                  <p><strong>Rocher :</strong> ${escapeHtml(rocher.tel || t('contact_not_provided'))}<br><strong>Ebenezer :</strong> ${escapeHtml(ebenezer.tel || t('contact_not_provided'))}</p>
                   <div class="social-links">
-                    <a href="#" class="social-link" title="Facebook">f</a>
-                    <a href="#" class="social-link" title="WhatsApp" style="background:#25D366;">💬</a>
-                    <a href="#" class="social-link" title="YouTube" style="background:#FF0000;">▶</a>
+                    ${fb ? `<a href="${escapeHtml(fb)}" target="_blank" class="social-link" title="Facebook">f</a>` : ''}
+                    ${yt ? `<a href="${escapeHtml(yt)}" target="_blank" class="social-link" title="YouTube" style="background:#FF0000;">▶</a>` : ''}
                   </div>
                 </div>
               `;
