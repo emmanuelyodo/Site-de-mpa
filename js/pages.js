@@ -27,6 +27,7 @@ const Pages = {
           <div class="hero-actions">
             <button class="btn btn-primary" onclick="App.navigate('rocher')">${t('hero_btn_rocher')}</button>
             <button class="btn btn-ghost" onclick="App.navigate('ebenezer')">${t('hero_btn_ebenezer')}</button>
+            <button class="btn btn-gold" onclick="App.navigate('bible')">${t('nav_bible')}</button>
             <button class="btn btn-gold" onclick="document.getElementById('contact-section').scrollIntoView({behavior:'smooth'})">${t('hero_btn_contact')}</button>
           </div>
         </div>
