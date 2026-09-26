@@ -586,7 +586,9 @@ function formatDate(dateStr) {
 }
 
 function templeLabel(temple) {
-  const map = { rocher: 'Rocher des Âges', ebenezer: 'Temple Ebenezer', general: 'Tous temples' };
+  const fr = { rocher: 'Rocher des Âges', ebenezer: 'Temple Ebenezer', general: 'Tous temples' };
+  const en = { rocher: 'Rock of Ages', ebenezer: 'Ebenezer Temple', general: 'All temples' };
+  const map = (typeof LANG !== 'undefined' && LANG === 'en') ? en : fr;
   return map[temple] || temple;
 }
 
