@@ -272,7 +272,7 @@ const Pages = {
     return `
       <!-- HERO TEMPLE -->
       <div class="breadcrumb">
-        <a href="#" onclick="App.navigate('accueil');return false;">🏠 Accueil</a>
+        <a href="#" onclick="App.navigate('accueil');return false;">${t('temple_breadcrumb_home')}</a>
         <span class="sep">›</span>
         <span class="current">${escapeHtml(c.nom)}</span>
       </div>
@@ -284,30 +284,30 @@ const Pages = {
           <div class="temple-info-grid">
             <div class="temple-info-card">
               <div class="info-icon">👤</div>
-              <div class="info-label">Responsable</div>
+              <div class="info-label">${t('temple_label_responsable')}</div>
               <div class="info-value">${escapeHtml(c.responsable)}</div>
             </div>
             <div class="temple-info-card">
               <div class="info-icon">📍</div>
-              <div class="info-label">Adresse</div>
+              <div class="info-label">${t('temple_label_adresse')}</div>
               <div class="info-value">${escapeHtml(c.adresse)}</div>
             </div>
             <div class="temple-info-card">
               <div class="info-icon">📞</div>
-              <div class="info-label">Téléphone</div>
+              <div class="info-label">${t('temple_label_tel')}</div>
               <div class="info-value">${escapeHtml(c.tel)}</div>
             </div>
             <div class="temple-info-card">
               <div class="info-icon">🗺</div>
-              <div class="info-label">Itinéraire</div>
+              <div class="info-label">${t('temple_label_itineraire')}</div>
               <div class="info-value">
-                <a href="https://maps.google.com" target="_blank" style="color:var(--gold);text-decoration:underline;">Voir sur la carte</a>
+                <a href="https://maps.google.com" target="_blank" style="color:var(--gold);text-decoration:underline;">${t('temple_view_map')}</a>
               </div>
             </div>
             ${(c.facebook || c.youtube) ? `
             <div class="temple-info-card">
               <div class="info-icon">🌐</div>
-              <div class="info-label">Réseaux sociaux</div>
+              <div class="info-label">${t('temple_label_social')}</div>
               <div class="info-value" style="display:flex;gap:.75rem;justify-content:center;">
                 ${c.facebook ? `<a href="${escapeHtml(c.facebook)}" target="_blank" style="color:var(--gold);" aria-label="Facebook">📘 Facebook</a>` : ''}
                 ${c.youtube ? `<a href="${escapeHtml(c.youtube)}" target="_blank" style="color:var(--gold);" aria-label="YouTube">▶ YouTube</a>` : ''}
@@ -322,8 +322,8 @@ const Pages = {
       <section class="section section-alt">
         <div class="container">
           <div class="section-header fade-in">
-            <span class="section-tag">Organisation</span>
-            <h2>Horaires des Cultes</h2>
+            <span class="section-tag">${t('temple_org_tag')}</span>
+            <h2>${t('temple_schedule_title')}</h2>
             <div class="section-divider left"></div>
           </div>
           <div class="mission-grid mt-3">
@@ -342,13 +342,13 @@ const Pages = {
         <div class="container">
           <div class="section-header fade-in" style="display:flex;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;gap:1rem;">
             <div>
-              <span class="section-tag">Enseignements</span>
-              <h2>Prédications & Messages</h2>
+              <span class="section-tag">${t('temple_teaching_tag')}</span>
+              <h2>${t('temple_messages_title')}</h2>
               <div class="section-divider left"></div>
             </div>
             ${isAdmin ? `
               <button class="btn btn-primary btn-sm" onclick="Admin.openMessageForm('${templeId}')">
-                + Ajouter un message
+                ${t('temple_add_message')}
               </button>
             ` : ''}
           </div>
@@ -360,9 +360,9 @@ const Pages = {
           ` : `
           <div class="empty-state mt-4">
             <div class="empty-icon">🎙</div>
-            <h3>Aucun message pour l'instant</h3>
-            <p>Les prédications de ce temple seront bientôt disponibles.</p>
-            ${isAdmin ? `<button class="btn btn-primary mt-2" onclick="Admin.openMessageForm('${templeId}')">+ Ajouter le premier message</button>` : ''}
+            <h3>${t('temple_no_messages')}</h3>
+            <p>${t('temple_no_messages_sub')}</p>
+            ${isAdmin ? `<button class="btn btn-primary mt-2" onclick="Admin.openMessageForm('${templeId}')">${t('temple_add_first_message')}</button>` : ''}
           </div>
           `}
         </div>
@@ -675,7 +675,7 @@ const Pages = {
       </div>` : '';
     const videoHtml = m.videoUrl ? `
       <a href="${escapeHtml(m.videoUrl)}" target="_blank" class="video-link">
-        ▶ Regarder la vidéo
+        ${t('podcasts_watch_video')}
       </a>` : '';
     const adminBtns = isAdmin ? `
       <div class="action-btns mt-2">
@@ -691,10 +691,10 @@ const Pages = {
         </div>
         <div class="message-card-body">
           <div class="message-info">
-            <div class="message-info-row">🎤 <strong>Prédicateur :</strong> ${escapeHtml(m.predicateur)}
+            <div class="message-info-row">🎤 <strong>${t('msg_label_preacher')} :</strong> ${escapeHtml(m.predicateur)}
             </div>
-            ${m.lecteur ? `<div class="message-info-row">📖 <strong>Lecteur :</strong> ${escapeHtml(m.lecteur)}</div>` : ''}
-            <div class="message-info-row">📅 <strong>Date :</strong> ${formatDate(m.date)}</div>
+            ${m.lecteur ? `<div class="message-info-row">📖 <strong>${t('msg_label_reader')} :</strong> ${escapeHtml(m.lecteur)}</div>` : ''}
+            <div class="message-info-row">📅 <strong>${t('msg_label_date')} :</strong> ${formatDate(m.date)}</div>
             ${m.description ? `<div class="message-info-row" style="align-items:flex-start;">💬 <span>${escapeHtml(m.description)}</span></div>` : ''}
           </div>
           ${audioHtml}
@@ -742,7 +742,7 @@ const Pages = {
         </div>
         <div class="livre-body">
           <h4>${escapeHtml(l.titre)}</h4>
-          <div class="livre-author">par ${escapeHtml(l.auteur)}</div>
+          <div class="livre-author">${t('livre_by')} ${escapeHtml(l.auteur)}</div>
           <p class="livre-summary">${escapeHtml(l.resume)}</p>
           ${adminBtns}
         </div>
