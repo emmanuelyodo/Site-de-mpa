@@ -101,7 +101,28 @@ const I18N = {
     bible_next: 'Suivant →',
 
     admin_login_btn: 'Se connecter',
-    lang_toggle: 'EN'
+    lang_toggle: 'EN',
+
+    temple_breadcrumb_home: '🏠 Accueil',
+    temple_label_responsable: 'Responsable',
+    temple_label_adresse: 'Adresse',
+    temple_label_tel: 'Téléphone',
+    temple_label_itineraire: 'Itinéraire',
+    temple_view_map: 'Voir sur la carte',
+    temple_label_social: 'Réseaux sociaux',
+    temple_org_tag: 'Organisation',
+    temple_schedule_title: 'Horaires des Cultes',
+    temple_teaching_tag: 'Enseignements',
+    temple_messages_title: 'Prédications & Messages',
+    temple_add_message: '+ Ajouter un message',
+    temple_add_first_message: '+ Ajouter le premier message',
+    temple_no_messages: 'Aucun message pour l\'instant',
+    temple_no_messages_sub: 'Les prédications de ce temple seront bientôt disponibles.',
+    msg_label_preacher: 'Prédicateur',
+    msg_label_reader: 'Lecteur',
+    msg_label_date: 'Date',
+    podcasts_watch_video: '▶ Regarder la vidéo',
+    livre_by: 'par'
   },
   en: {
     nav_accueil: '🏠 Home',
@@ -197,7 +218,28 @@ const I18N = {
     bible_next: 'Next →',
 
     admin_login_btn: 'Log in',
-    lang_toggle: 'FR'
+    lang_toggle: 'FR',
+
+    temple_breadcrumb_home: '🏠 Home',
+    temple_label_responsable: 'Pastor',
+    temple_label_adresse: 'Address',
+    temple_label_tel: 'Phone',
+    temple_label_itineraire: 'Directions',
+    temple_view_map: 'View on map',
+    temple_label_social: 'Social media',
+    temple_org_tag: 'Organization',
+    temple_schedule_title: 'Service Times',
+    temple_teaching_tag: 'Teaching',
+    temple_messages_title: 'Sermons & Messages',
+    temple_add_message: '+ Add a message',
+    temple_add_first_message: '+ Add the first message',
+    temple_no_messages: 'No messages yet',
+    temple_no_messages_sub: 'Sermons from this temple will be available soon.',
+    msg_label_preacher: 'Preacher',
+    msg_label_reader: 'Reader',
+    msg_label_date: 'Date',
+    podcasts_watch_video: '▶ Watch the video',
+    livre_by: 'by'
   }
 };
 
