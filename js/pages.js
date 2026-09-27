@@ -269,18 +269,24 @@ const Pages = {
     const messages = DB.getMessages(templeId).sort((a,b) => new Date(b.date) - new Date(a.date));
     const isAdmin = App.isAdmin;
 
+    // En anglais, on affiche une version traduite du nom/de la description
+    // (le contenu saisi en Admin reste en français, mais ces 2 temples étant
+    // fixes, on peut proposer une présentation bilingue toute prête).
+    const displayNom = LANG === 'en' ? t(isRocher ? 'temple_rocher_name' : 'temple_ebenezer_name') : c.nom;
+    const displayDesc = LANG === 'en' ? t(isRocher ? 'temple_rocher_desc' : 'temple_ebenezer_desc') : c.description;
+
     return `
       <!-- HERO TEMPLE -->
       <div class="breadcrumb">
         <a href="#" onclick="App.navigate('accueil');return false;">${t('temple_breadcrumb_home')}</a>
         <span class="sep">›</span>
-        <span class="current">${escapeHtml(c.nom)}</span>
+        <span class="current">${escapeHtml(displayNom)}</span>
       </div>
       <section class="temple-page-hero" style="background:linear-gradient(135deg,${c.couleur||'#1E1F6B'},${c.couleur2||'#2E2F8B'});">
         <div class="container">
-          <img src="${c.logo}" alt="Logo ${escapeHtml(c.nom)}" style="width:120px;height:120px;border-radius:50%;border:4px solid rgba(255,255,255,.3);margin:0 auto 1.25rem;display:block;box-shadow:0 0 40px rgba(0,0,0,.3);object-fit:cover;">
-          <h1>${escapeHtml(c.nom)}</h1>
-          <p>${escapeHtml(c.description)}</p>
+          <img src="${c.logo}" alt="Logo ${escapeHtml(displayNom)}" style="width:120px;height:120px;border-radius:50%;border:4px solid rgba(255,255,255,.3);margin:0 auto 1.25rem;display:block;box-shadow:0 0 40px rgba(0,0,0,.3);object-fit:cover;">
+          <h1>${escapeHtml(displayNom)}</h1>
+          <p>${escapeHtml(displayDesc)}</p>
           <div class="temple-info-grid">
             <div class="temple-info-card">
               <div class="info-icon">👤</div>
