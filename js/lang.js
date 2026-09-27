@@ -135,7 +135,7 @@ const I18N = {
     nav_bible: '📖 Bible',
     nav_admin: '🔐 Admin',
     brand_line1: 'Apostolic Mission',
-    brand_line2: 'of Pentecost — M.A.P.',
+    brand_line2: 'of Pentecost — M.P.A.',
     footer_text: 'Founded on the Word of God | Psalm 18:1-2',
     footer_admin: '⚙ Admin Area',
 
