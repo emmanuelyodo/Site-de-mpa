@@ -692,7 +692,7 @@ const Pages = {
     return `
       <div class="message-card fade-in">
         <div class="message-card-header">
-          <h4>${escapeHtml(m.titre)}</h4>
+          <h4>${escapeHtml(bt(m.titre, m.titre_en))}</h4>
           <span class="message-badge">${templeLabel(m.temple)}</span>
         </div>
         <div class="message-card-body">
@@ -701,7 +701,7 @@ const Pages = {
             </div>
             ${m.lecteur ? `<div class="message-info-row">📖 <strong>${t('msg_label_reader')} :</strong> ${escapeHtml(m.lecteur)}</div>` : ''}
             <div class="message-info-row">📅 <strong>${t('msg_label_date')} :</strong> ${formatDate(m.date)}</div>
-            ${m.description ? `<div class="message-info-row" style="align-items:flex-start;">💬 <span>${escapeHtml(m.description)}</span></div>` : ''}
+            ${m.description ? `<div class="message-info-row" style="align-items:flex-start;">💬 <span>${escapeHtml(bt(m.description, m.description_en))}</span></div>` : ''}
           </div>
           ${audioHtml}
           ${videoHtml}
@@ -725,7 +725,7 @@ const Pages = {
         </div>
         <div class="affiche-body">
           <span class="affiche-temple-tag ${tagClass}">${templeLabel(a.temple)}</span>
-          <h4>${escapeHtml(a.titre)}</h4>
+          <h4>${escapeHtml(bt(a.titre, a.titre_en))}</h4>
           <div class="affiche-meta">📅 ${formatDate(a.date)}</div>
           ${adminBtns}
         </div>
@@ -747,9 +747,9 @@ const Pages = {
           ${l.coverUrl ? `<img src="${escapeHtml(l.coverUrl)}" alt="${escapeHtml(l.titre)}" loading="lazy">` : `<span style="font-size:4rem">${emoji}</span>`}
         </div>
         <div class="livre-body">
-          <h4>${escapeHtml(l.titre)}</h4>
+          <h4>${escapeHtml(bt(l.titre, l.titre_en))}</h4>
           <div class="livre-author">${t('livre_by')} ${escapeHtml(l.auteur)}</div>
-          <p class="livre-summary">${escapeHtml(l.resume)}</p>
+          <p class="livre-summary">${escapeHtml(bt(l.resume, l.resume_en))}</p>
           ${adminBtns}
         </div>
       </div>`;
@@ -769,10 +769,10 @@ const Pages = {
           <span style="font-size:3.5rem;">🎬</span>
         </div>
         <div class="livre-body">
-          <span class="affiche-temple-tag tag-general">Épisode ${p.numero || '—'}</span>
-          <h4>${escapeHtml(p.titre)}</h4>
+          <span class="affiche-temple-tag tag-general">${LANG === 'en' ? 'Episode' : 'Épisode'} ${p.numero || '—'}</span>
+          <h4>${escapeHtml(bt(p.titre, p.titre_en))}</h4>
           <div class="livre-author">📅 ${formatDate(p.date)}</div>
-          <p class="livre-summary">${escapeHtml(p.description||'')}</p>
+          <p class="livre-summary">${escapeHtml(bt(p.description, p.description_en)||'')}</p>
           ${videoHtml}
           ${adminBtns}
         </div>
@@ -819,13 +819,13 @@ const Pages = {
     return `
       <div class="message-card fade-in">
         <div class="message-card-header">
-          <h4>${escapeHtml(a.titre)}</h4>
+          <h4>${escapeHtml(bt(a.titre, a.titre_en))}</h4>
           <span class="message-badge">${templeLabel(a.temple)}</span>
         </div>
         <div class="message-card-body">
           <div class="message-info">
-            <div class="message-info-row">📅 <strong>Date :</strong> ${formatDate(a.date)}</div>
-            ${a.description ? `<div class="message-info-row" style="align-items:flex-start;">💬 <span>${escapeHtml(a.description)}</span></div>` : ''}
+            <div class="message-info-row">📅 <strong>${t('msg_label_date')} :</strong> ${formatDate(a.date)}</div>
+            ${a.description ? `<div class="message-info-row" style="align-items:flex-start;">💬 <span>${escapeHtml(bt(a.description, a.description_en))}</span></div>` : ''}
           </div>
           ${audioHtml}
           ${adminBtns}
@@ -840,12 +840,12 @@ const Pages = {
     const lb = document.getElementById('lightbox');
     lb.innerHTML = `
       <div class="lightbox-content">
-        ${a.imageUrl ? `<img class="lightbox-img" src="${escapeHtml(a.imageUrl)}" alt="${escapeHtml(a.titre)}">` : `<div style="height:200px;background:var(--bg2);display:flex;align-items:center;justify-content:center;font-size:5rem;">🎨</div>`}
+        ${a.imageUrl ? `<img class="lightbox-img" src="${escapeHtml(a.imageUrl)}" alt="${escapeHtml(bt(a.titre, a.titre_en))}">` : `<div style="height:200px;background:var(--bg2);display:flex;align-items:center;justify-content:center;font-size:5rem;">🎨</div>`}
         <div class="lightbox-body">
           <span class="affiche-temple-tag ${templeTagClass(a.temple)}">${templeLabel(a.temple)}</span>
-          <h3 style="color:var(--navy);margin:.5rem 0;">${escapeHtml(a.titre)}</h3>
+          <h3 style="color:var(--navy);margin:.5rem 0;">${escapeHtml(bt(a.titre, a.titre_en))}</h3>
           <p style="font-size:.85rem;color:var(--text-muted);margin-bottom:.75rem;">📅 ${formatDate(a.date)}</p>
-          <p>${escapeHtml(a.description)}</p>
+          <p>${escapeHtml(bt(a.description, a.description_en))}</p>
         </div>
       </div>
       <button class="lightbox-close" onclick="Pages.closeLightbox()">✕</button>
@@ -867,16 +867,16 @@ const Pages = {
     const emojis = ['📖','📗','📘','📙','📕','📚'];
     const emoji = emojis[l.id % emojis.length];
     const modal = document.getElementById('livreModal');
-    modal.querySelector('.modal-header h3').textContent = l.titre;
+    modal.querySelector('.modal-header h3').textContent = bt(l.titre, l.titre_en);
     modal.querySelector('.modal-body').innerHTML = `
       <div style="display:flex;gap:1.25rem;flex-wrap:wrap;">
         <div style="width:120px;height:160px;border-radius:8px;overflow:hidden;flex-shrink:0;background:linear-gradient(135deg,var(--navy),var(--navy-light));display:flex;align-items:center;justify-content:center;">
           ${l.coverUrl ? `<img src="${escapeHtml(l.coverUrl)}" style="width:100%;height:100%;object-fit:cover;" alt="Couverture">` : `<span style="font-size:3.5rem;">${emoji}</span>`}
         </div>
         <div style="flex:1;min-width:160px;">
-          <h3 style="color:var(--navy);margin-bottom:.25rem;">${escapeHtml(l.titre)}</h3>
-          <p style="font-size:.9rem;color:var(--text-muted);margin-bottom:1rem;">par <strong>${escapeHtml(l.auteur)}</strong></p>
-          <p style="font-size:.9rem;line-height:1.6;">${escapeHtml(l.resume)}</p>
+          <h3 style="color:var(--navy);margin-bottom:.25rem;">${escapeHtml(bt(l.titre, l.titre_en))}</h3>
+          <p style="font-size:.9rem;color:var(--text-muted);margin-bottom:1rem;">${t('livre_by')} <strong>${escapeHtml(l.auteur)}</strong></p>
+          <p style="font-size:.9rem;line-height:1.6;">${escapeHtml(bt(l.resume, l.resume_en))}</p>
           <div style="display:flex;gap:.5rem;margin-top:1.25rem;flex-wrap:wrap;">
             ${l.downloadUrl ? `<a href="${escapeHtml(l.downloadUrl)}" target="_blank" class="btn btn-primary btn-sm">⬇ Télécharger</a>` : ''}
             ${l.commandeUrl ? `<a href="${escapeHtml(l.commandeUrl)}" target="_blank" class="btn btn-gold btn-sm">🛒 Commander</a>` : ''}
