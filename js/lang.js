@@ -247,6 +247,13 @@ function t(key) {
   return (I18N[LANG] && I18N[LANG][key]) || (I18N.fr[key]) || key;
 }
 
+// Renvoie le texte anglais saisi par l'admin si disponible et qu'on est en
+// anglais, sinon le texte français (comportement par défaut).
+function bt(frText, enText) {
+  if (LANG === 'en' && enText && enText.trim()) return enText;
+  return frText;
+}
+
 function setLanguage(lang) {
   LANG = lang;
   localStorage.setItem('mpa_lang', lang);
